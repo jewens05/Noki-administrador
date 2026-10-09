@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Noki Administración — Gestión puntos de operación: gestiona las franjas de horarios y los receptores habilitados.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Receptores y horarios — Noki</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Logos/Flagicon.png">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Estilos compartidos -->
+  <link rel="stylesheet" href="estilos.css">
+  <!-- Módulo de accesibilidad -->
+  <script src="accesibilidad.js"></script>
+</head>
+
+<body>
+  <!-- ====================================================
+       LAYOUT MAESTRO COMPARTIDO (Sidebar + Topbar)
+       Vista: Gestión de Puntos de Operación (Pantalla 4 / AF-08 a AF-11 y AF-14)
+       ==================================================== -->
+  <div class="app-layout">
+
+    <!-- --------------------------------------------------
+         SIDEBAR INSTITUCIONAL (Fijo a la izquierda)
+         -------------------------------------------------- -->
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal de navegación">
+      <!-- Marca NOKI -->
+      <div class="sidebar__brand">
+        <a href="resumen.html" aria-label="Ir al inicio del panel">
+          <img 
+            src="Logos/Logo sobre fondos oscuros.png" 
+            alt="Noki Administración" 
+            width="140" 
+            height="auto"
+          >
+        </a>
+      </div>
+
+      <!-- Navegación -->
+      <nav class="sidebar__nav">
+        <a href="resumen.html" class="sidebar__link">
+          <i class="ph ph-squares-four" aria-hidden="true"></i>
+          <span>Inicio</span>
+        </a>
+
+        <a href="directorio.html" class="sidebar__link">
+          <i class="ph ph-buildings" aria-hidden="true"></i>
+          <span>Directorio</span>
+        </a>
+
+        <!-- Receptores y Horarios ACTIVO -->
+        <a href="operacion.html" class="sidebar__link sidebar__link--active" aria-current="page">
+          <i class="ph ph-lightning" aria-hidden="true"></i>
+          <span>Receptores y horarios</span>
+        </a>
+
+        <a href="entregas.html" class="sidebar__link">
+          <i class="ph ph-truck" aria-hidden="true"></i>
+          <span>Supervisión de entrega</span>
+        </a>
+
+        <a href="reportes.html" class="sidebar__link">
+          <i class="ph ph-file-text" aria-hidden="true"></i>
+          <span>Reportes</span>
+        </a>
+
+        <a href="aprende.html" class="sidebar__link">
+          <i class="ph ph-book-open" aria-hidden="true"></i>
+          <span>Módulo Aprende</span>
+        </a>
+      </nav>
+
+      <!-- Isotipo / Ilustración institucional decorativa (inferior) -->
+      <div class="sidebar__decor" aria-hidden="true">
+        <img src="Iconos/Operación.png" alt="">
+      </div>
+    </aside>
+
+    <!-- Overlay oscuro para versión móvil -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- --------------------------------------------------
+         ÁREA PRINCIPAL DE CONTENIDO
+         -------------------------------------------------- -->
+    <div class="main-wrapper">
+
+      <!-- TOPBAR SUPERIOR (Sticky) -->
+      <header class="topbar" role="banner">
+        <div class="flex items-center gap-4">
+          <!-- Botón hamburguesa móvil -->
+          <button 
+            type="button" 
+            class="sidebar-toggle" 
+            id="sidebar-toggle" 
+            aria-label="Abrir menú lateral"
+            aria-expanded="false"
+          >
+            <i class="ph ph-list" aria-hidden="true"></i>
+          </button>
+
+          <!-- Título de la vista -->
+          <span class="topbar__title">Panel de administración</span>
+        </div>
+
+        <!-- Acciones del Topbar -->
+        <div class="topbar__actions">
+          <!-- Controles de Accesibilidad (Usabilidad) -->
+          <div class="accessibility-controls" role="region" aria-label="Controles de accesibilidad">
+            <button type="button" class="accessibility-btn" id="btn-font-size" title="Aumentar tamaño de texto" aria-label="Aumentar tamaño de texto">
+              <span style="font-weight: 800; font-size: 1.1rem; line-height: 1;">A<sup style="font-size: 0.7rem; font-weight: 900;">+</sup></span>
+              <span class="accessibility-badge" id="font-size-badge">100%</span>
+            </button>
+            <button type="button" class="accessibility-btn" id="btn-theme-toggle" title="Cambiar contraste (Claro / Oscuro)" aria-label="Cambiar contraste">
+              <i class="ph ph-moon" id="theme-toggle-icon" style="font-size: 1.2rem;" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Notificaciones y Menú Desplegable -->
+          <div class="topbar__notifications-wrapper" style="position: relative;">
+            <button 
+              type="button" 
+              class="topbar__icon-btn" 
+              id="notifications-btn" 
+              aria-label="Notificaciones del sistema"
+              aria-expanded="false"
+              aria-haspopup="true"
+              title="Notificaciones"
+            >
+              <img src="Iconos/Iconos negros/Notificacion.png" alt="" width="22" height="22">
+              <span class="notification-dot" style="position: absolute; top: 6px; right: 6px; width: 9px; height: 9px; background: #DC2626; border-radius: 50%; border: 2px solid var(--white);"></span>
+            </button>
+
+            <!-- Menú desplegable de notificaciones -->
+            <div class="notifications-dropdown-menu" id="notifications-dropdown" role="menu" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); width: 340px; background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-xl); border: 1px solid var(--neutral-200); z-index: 1000; padding: 0; overflow: hidden;">
+              <div style="padding: 12px 16px; background: var(--noki-navy); color: #FFFFFF; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 700; font-size: 0.875rem;">Notificaciones</span>
+                <span class="notification-count-badge" style="font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">3 nuevas</span>
+              </div>
+              <div style="max-height: 280px; overflow-y: auto;">
+                <a href="entregas.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E8F5E9; color: #1B5E20; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-package" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Nueva entrega recibida</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Se acaba de recibir una nueva entrega (#E1093) en Centro de Acopio Manrique.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 5 minutos</span>
+                  </div>
+                </a>
+                <a href="operacion.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E3F2FD; color: #1565C0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-clock" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Horario actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">El punto UdeM habilitó franja de 06:00 AM - 08:00 PM.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 25 minutos</span>
+                  </div>
+                </a>
+                <a href="directorio.html" style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #FFF8E1; color: #F57F17; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-buildings" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Directorio actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Ficha de Centro Plaza Botero fue marcada en remodelación.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 1 hora</span>
+                  </div>
+                </a>
+              </div>
+              <div style="padding: 8px 16px; background: var(--neutral-50); border-top: 1px solid var(--neutral-100); text-align: center;">
+                <button type="button" id="btn-mark-notifications-read" style="font-size: 0.75rem; color: var(--noki-green-800); font-weight: 600; background: none; border: none; cursor: pointer;">
+                  Marcar todas como leídas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divisor vertical -->
+          <div class="topbar__divider" aria-hidden="true"></div>
+
+          <!-- Perfil de usuario y Dropdown -->
+          <div class="topbar__user-wrapper">
+            <button 
+              type="button" 
+              class="topbar__user" 
+              id="user-menu-btn" 
+              aria-expanded="false" 
+              aria-haspopup="true"
+            >
+              <div class="topbar__avatar" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Foto de perfil.png" alt="Foto de perfil">
+              </div>
+              <div class="topbar__user-info">
+                <span class="topbar__user-name" id="user-display-name">Jeffry Caro</span>
+                <span class="topbar__user-email" id="user-display-email" style="font-size: 0.7rem; color: var(--neutral-500); display: block; line-height: 1.2;">JCaro@Noki.co</span>
+                <span class="topbar__user-role" id="user-display-role">Administrador</span>
+              </div>
+              <span class="topbar__dropdown-btn" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Flecha abajo.png" width="16" height="16" alt="">
+              </span>
+            </button>
+
+            <!-- Menú desplegable de usuario -->
+            <div class="user-dropdown-menu" id="user-dropdown" role="menu">
+              <div class="user-dropdown-header">
+                <div class="fw-semibold text-sm" id="dropdown-user-name">Jeffry Caro</div>
+                <div class="text-xs" style="color: var(--neutral-500); margin-bottom: 2px;">
+                  Correo vinculado: <strong id="dropdown-user-email">JCaro@Noki.co</strong>
+                </div>
+                <div class="text-xs text-muted" id="dropdown-user-role">Rol: Administrador</div>
+              </div>
+
+
+              <button type="button" class="user-dropdown-item user-dropdown-item--danger" id="btn-logout" role="menuitem">
+                <i class="ph ph-sign-out"></i>
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- CONTENIDO DE LA PÁGINA (Gestión Puntos de Operación) -->
+      <main class="page-content" id="main-content">
+
+        <!-- ==============================================
+             ENCABEZADO DE VISTA
+             ============================================== -->
+        <div class="page-title-group">
+          <div>
+            <h1 class="page-title">Receptores y horarios</h1>
+            <p class="page-subtitle">Gestiona las franjas de horarios y los receptores habilitados</p>
+          </div>
+        </div>
+
+        <!-- ==============================================
+             TABLA DE PUNTOS DE OPERACIÓN (Fiel a Mockup Pantalla 4)
+             ============================================== -->
+        <div class="directory-card" role="region" aria-labelledby="operation-table-label">
+          <h2 id="operation-table-label" class="sr-only">Listado de puntos de operación con encargados y franjas</h2>
+          <table class="directory-table" id="operation-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 28%;">Lugar</th>
+                <th scope="col" style="width: 32%;">Encargados</th>
+                <th scope="col" style="width: 20%;">Horario</th>
+                <th scope="col" style="width: 14%;">Estado</th>
+                <th scope="col" style="width: 6%; text-align: center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="operation-tbody">
+              <!-- Fila 1: Manrique -->
+              <tr data-point-id="op-1" data-status="funcional">
+                <td>
+                  <strong>Centro de Acopio Manrique</strong>
+                </td>
+                <td>
+                  <div class="chips-container">
+                    <button type="button" class="operacion-chip btn-edit-receptor" data-email="J.Caro@noki.edu" data-point="Centro de Acopio Manrique" title="Editar receptor asignado">
+                      <span>J.Caro@noki.edu</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="operacion-chip btn-edit-receptor" data-email="Juancata@noki.edu" data-point="Centro de Acopio Manrique" title="Editar receptor asignado">
+                      <span>Juancata@noki.edu</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="operacion-chip btn-edit-schedule" data-schedule="10:00 AM - 6:00 PM" data-point="Centro de Acopio Manrique" title="Editar franja horaria">
+                    <span>10:00 AM - 6:00 PM</span>
+                    <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-point" title="Ver detalle del punto operativo" aria-label="Ver Centro de Acopio Manrique">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 2: Plaza Botero -->
+              <tr data-point-id="op-2" data-status="remodelacion">
+                <td>
+                  <strong>Centro de Acopio Plaza Botero</strong>
+                </td>
+                <td>
+                  <div class="chips-container">
+                    <button type="button" class="operacion-chip operacion-chip--empty btn-edit-receptor" data-email="Por definir" data-point="Centro de Acopio Plaza Botero" title="Asignar receptor">
+                      <span>Por definir</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="operacion-chip btn-edit-schedule" data-schedule="6:00 AM - 2:00 PM" data-point="Centro de Acopio Plaza Botero" title="Editar franja horaria">
+                    <span>6:00 AM - 2:00 PM</span>
+                    <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--remodelacion">Remodelación</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-point" title="Ver detalle del punto operativo" aria-label="Ver Centro de Acopio Plaza Botero">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 3: Moravia -->
+              <tr data-point-id="op-3" data-status="funcional">
+                <td>
+                  <strong>Centro de Acopio Moravia</strong>
+                </td>
+                <td>
+                  <div class="chips-container">
+                    <button type="button" class="operacion-chip btn-edit-receptor" data-email="Danilota@noki.edu" data-point="Centro de Acopio Moravia" title="Editar receptor asignado">
+                      <span>Danilota@noki.edu</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="operacion-chip btn-edit-schedule" data-schedule="6:00 AM - 8:00 PM" data-point="Centro de Acopio Moravia" title="Editar franja horaria">
+                    <span>6:00 AM - 8:00 PM</span>
+                    <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-point" title="Ver detalle del punto operativo" aria-label="Ver Centro de Acopio Moravia">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 4: UdeM -->
+              <tr data-point-id="op-4" data-status="funcional">
+                <td>
+                  <strong>Centro de Acopio UdeM</strong>
+                </td>
+                <td>
+                  <div class="chips-container">
+                    <button type="button" class="operacion-chip btn-edit-receptor" data-email="Dalmata@noki.edu" data-point="Centro de Acopio UdeM" title="Editar receptor asignado">
+                      <span>Dalmata@noki.edu</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="operacion-chip btn-edit-schedule" data-schedule="6:00 AM - 8:00 PM" data-point="Centro de Acopio UdeM" title="Editar franja horaria">
+                    <span>6:00 AM - 8:00 PM</span>
+                    <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-point" title="Ver detalle del punto operativo" aria-label="Ver Centro de Acopio UdeM">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 5: Terminal del sur -->
+              <tr data-point-id="op-5" data-status="inoperativo">
+                <td>
+                  <strong>Centro de Acopio Terminal del sur</strong>
+                </td>
+                <td>
+                  <div class="chips-container">
+                    <button type="button" class="operacion-chip operacion-chip--empty btn-edit-receptor" data-email="Inoperativo" data-point="Centro de Acopio Terminal del sur" title="Asignar receptor">
+                      <span>Inoperativo</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="operacion-chip btn-edit-schedule" data-schedule="6:00 AM - 3:00 PM" data-point="Centro de Acopio Terminal del sur" title="Editar franja horaria">
+                    <span>6:00 AM - 3:00 PM</span>
+                    <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--inoperativo">Inoperativo</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-point" title="Ver detalle del punto operativo" aria-label="Ver Centro de Acopio Terminal del sur">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 6: Guayabal -->
+              <tr data-point-id="op-6" data-status="funcional">
+                <td>
+                  <strong>Centro de Acopio Guayabal</strong>
+                </td>
+                <td>
+                  <div class="chips-container">
+                    <button type="button" class="operacion-chip btn-edit-receptor" data-email="Melissaca@noki.edu" data-point="Centro de Acopio Guayabal" title="Editar receptor asignado">
+                      <span>Melissaca@noki.edu</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="operacion-chip btn-edit-schedule" data-schedule="6:00 AM - 4:00 PM" data-point="Centro de Acopio Guayabal" title="Editar franja horaria">
+                    <span>6:00 AM - 4:00 PM</span>
+                    <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-point" title="Ver detalle del punto operativo" aria-label="Ver Centro de Acopio Guayabal">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 7: Doce de Octubre -->
+              <tr data-point-id="op-7" data-status="funcional">
+                <td>
+                  <strong>Centro de Acopio Doce de Octubre</strong>
+                </td>
+                <td>
+                  <div class="chips-container">
+                    <button type="button" class="operacion-chip btn-edit-receptor" data-email="Camiloca@noki.edu" data-point="Centro de Acopio Doce de Octubre" title="Editar receptor asignado">
+                      <span>Camiloca@noki.edu</span>
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+                <td>
+                  <button type="button" class="operacion-chip btn-edit-schedule" data-schedule="Centro de Acopio" data-point="Centro de Acopio Doce de Octubre" title="Editar franja horaria">
+                    <span>Centro de Acopio</span>
+                    <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                  </button>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-point" title="Ver detalle del punto operativo" aria-label="Ver Centro de Acopio Doce de Octubre">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ====================================================
+       MODALES DE GESTIÓN (AF-08, AF-10, AF-14)
+       ==================================================== -->
+
+  <!-- 1. Modal: Crear / Editar Punto Académico (AF-08) -->
+  <div class="modal-backdrop" id="modal-point" role="dialog" aria-modal="true" aria-labelledby="modal-point-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-point-title">Nuevo Punto Académico</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-point-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <form id="form-point" novalidate>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="point-name" class="form-label">Nombre del punto académico (3 a 120 caracteres) *</label>
+            <input type="text" id="point-name" class="form-input" placeholder="Ej. Campus ITM Fraternidad" minlength="3" maxlength="120" required>
+          </div>
+          <div class="form-group">
+            <label for="point-campus" class="form-label">Institución o sede</label>
+            <input type="text" id="point-campus" class="form-input" placeholder="Ej. Instituto Tecnológico Metropolitano">
+          </div>
+          <div class="form-group">
+            <label for="point-status" class="form-label">Estado operativo</label>
+            <select id="point-status" class="form-select">
+              <option value="funcional">Funcional (Activo)</option>
+              <option value="remodelacion">Remodelación</option>
+              <option value="inoperativo">Inoperativo (Inactivo)</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn--secondary" id="btn-cancel-point">Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="btn-save-point">Guardar punto</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Modal: Asignar / Gestionar Encargados y Receptores -->
+  <div class="modal-backdrop" id="modal-receptor" role="dialog" aria-modal="true" aria-labelledby="modal-receptor-title">
+    <div class="modal-dialog" style="max-width: 540px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-receptor-title">Gestión de Encargados / Receptores</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-receptor-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p class="text-sm text-muted mb-3">
+          Punto operativo: <strong id="receptor-point-target">Centro de Acopio</strong>
+        </p>
+
+        <!-- Lista de Encargados Actuales -->
+        <div class="form-group mb-4">
+          <label class="form-label" style="font-weight: 700;">Encargados asignados (Correo administrativo)</label>
+          <div id="modal-assigned-receptors-list" class="flex flex-col gap-2 mt-2" style="background: var(--neutral-50); padding: 12px; border-radius: var(--radius-md); border: 1px solid var(--neutral-200);">
+            <!-- Insertado dinámicamente con JS -->
+          </div>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid var(--neutral-200); margin: 16px 0;">
+
+        <!-- Formulario para Crear Ficha / Nueva Cuenta de Encargado -->
+        <form id="form-new-receptor" novalidate>
+          <h3 style="font-size: 0.95rem; font-weight: 700; color: var(--noki-navy); margin-bottom: 12px;" class="flex items-center gap-2">
+            <i class="ph ph-user-plus" style="font-size: 1.1rem; color: var(--noki-green-700);"></i>
+            Crear ficha de nuevo encargado (Cuenta con Correo y Contraseña)
+          </h3>
+          <div class="form-group mb-3">
+            <label for="new-receptor-name" class="form-label">Nombre de usuario / Encargado</label>
+            <input type="text" id="new-receptor-name" class="form-input" placeholder="Ej. Ángel Rodriguez">
+          </div>
+          <div class="form-group mb-3">
+            <label for="new-receptor-email" class="form-label">Correo administrativo *</label>
+            <input type="email" id="new-receptor-email" class="form-input" placeholder="ejemplo@noki.edu" required>
+          </div>
+          <div class="form-group mb-3">
+            <label for="new-receptor-pass" class="form-label">Contraseña para la cuenta *</label>
+            <input type="password" id="new-receptor-pass" class="form-input" placeholder="Ingresa una contraseña segura" required>
+          </div>
+          <div class="flex justify-end mt-4 gap-2">
+            <button type="button" class="btn btn--secondary" id="btn-cancel-receptor">Cerrar</button>
+            <button type="submit" class="btn btn--primary" id="btn-add-new-receptor">
+              <i class="ph ph-plus-circle" style="font-size: 1rem;"></i>
+              Crear Ficha y Asignar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal: Configurar Franja Horaria (AF-10 / AF-11) -->
+  <div class="modal-backdrop" id="modal-schedule" role="dialog" aria-modal="true" aria-labelledby="modal-schedule-title">
+    <div class="modal-dialog" style="max-width: 520px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-schedule-title">Configurar Franja Horaria</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-schedule-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <form id="form-schedule" novalidate>
+        <div class="modal-body">
+          <p class="text-sm text-muted">
+            Punto: <strong id="schedule-point-target">Centro de Acopio</strong>
+          </p>
+          <div class="grid-2 mt-3">
+            <div class="form-group">
+              <label for="schedule-start" class="form-label">Hora de inicio *</label>
+              <input type="time" id="schedule-start" class="form-input" value="06:00" required>
+            </div>
+            <div class="form-group">
+              <label for="schedule-end" class="form-label">Hora de fin *</label>
+              <input type="time" id="schedule-end" class="form-input" value="14:00" required>
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn--secondary" id="btn-cancel-schedule">Cancelar</button>
+          <button type="submit" class="btn btn--primary" id="btn-save-schedule">Guardar franja</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. Modal: Detalle del Punto Operativo -->
+  <div class="modal-backdrop" id="modal-view-point" role="dialog" aria-modal="true" aria-labelledby="modal-point-view-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-point-view-title">Detalle del Punto Operativo</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-view-point-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-point-view-content">
+        <!-- Rellenado dinámicamente con JS -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn--secondary" id="btn-close-view-point-footer">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       JAVASCRIPT — Lógica y Control de Puntos de Operación
+       ==================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. Control de Sesión y Perfil
+      const role = sessionStorage.getItem('noki-admin-role') || 'administrador';
+      const userName = sessionStorage.getItem('noki-admin-name') || 'Jeffry Caro';
+      const userEmail = sessionStorage.getItem('noki-admin-email') || 'JCaro@Noki.co';
+
+      const userDisplayName = document.getElementById('user-display-name');
+      const userDisplayRole = document.getElementById('user-display-role');
+      const dropdownUserName = document.getElementById('dropdown-user-name');
+      const dropdownUserRole = document.getElementById('dropdown-user-role');
+
+      if (userDisplayName) userDisplayName.textContent = userName;
+      if (userDisplayRole) userDisplayRole.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+      if (dropdownUserName) dropdownUserName.textContent = userName;
+      if (dropdownUserRole) dropdownUserRole.textContent = 'Rol: ' + (role.charAt(0).toUpperCase() + role.slice(1));
+      const dropdownUserEmail = document.getElementById('dropdown-user-email');
+      if (dropdownUserEmail) dropdownUserEmail.textContent = userEmail;
+      const userDisplayEmail = document.getElementById('user-display-email');
+      if (userDisplayEmail) userDisplayEmail.textContent = userEmail;
+
+      // 2. Dropdown de Usuario
+      const userBtn = document.getElementById('user-menu-btn');
+      const userDropdown = document.getElementById('user-dropdown');
+
+      if (userBtn && userDropdown) {
+        userBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const isActive = userDropdown.classList.contains('active');
+          userDropdown.classList.toggle('active', !isActive);
+          userBtn.setAttribute('aria-expanded', !isActive);
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+            userDropdown.classList.remove('active');
+            userBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      // Logout
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          sessionStorage.removeItem('noki-admin-role');
+          sessionStorage.removeItem('noki-admin-user');
+          sessionStorage.removeItem('noki-admin-name');
+          sessionStorage.removeItem('noki-admin-email');
+          window.location.href = 'index.html';
+        });
+      }
+
+      // 3. Toggle de Sidebar Móvil
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+      }
+
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+          if (sidebar && sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        });
+      }
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      // 4. Modales
+      const modalPoint = document.getElementById('modal-point');
+      const modalReceptor = document.getElementById('modal-receptor');
+      const modalSchedule = document.getElementById('modal-schedule');
+      const modalViewPoint = document.getElementById('modal-view-point');
+
+      function openModal(m) {
+        if (m) {
+          m.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeModal(m) {
+        if (m) {
+          m.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Cerrar modales con botones X y Cancelar
+      document.getElementById('btn-close-point-modal')?.addEventListener('click', () => closeModal(modalPoint));
+      document.getElementById('btn-cancel-point')?.addEventListener('click', () => closeModal(modalPoint));
+
+      document.getElementById('btn-close-receptor-modal')?.addEventListener('click', () => closeModal(modalReceptor));
+      document.getElementById('btn-cancel-receptor')?.addEventListener('click', () => closeModal(modalReceptor));
+
+      document.getElementById('btn-close-schedule-modal')?.addEventListener('click', () => closeModal(modalSchedule));
+      document.getElementById('btn-cancel-schedule')?.addEventListener('click', () => closeModal(modalSchedule));
+
+      document.getElementById('btn-close-view-point-modal')?.addEventListener('click', () => closeModal(modalViewPoint));
+      document.getElementById('btn-close-view-point-footer')?.addEventListener('click', () => closeModal(modalViewPoint));
+
+      [modalPoint, modalReceptor, modalSchedule, modalViewPoint].forEach(function (m) {
+        if (m) {
+          m.addEventListener('click', function (e) {
+            if (e.target === m) closeModal(m);
+          });
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeModal(modalPoint);
+          closeModal(modalReceptor);
+          closeModal(modalSchedule);
+          closeModal(modalViewPoint);
+        }
+      });
+
+      // Botón superior: Crear punto académico
+      document.getElementById('btn-create-operation-point')?.addEventListener('click', function () {
+        document.getElementById('form-point')?.reset();
+        document.getElementById('modal-point-title').textContent = 'Nuevo Punto Académico Operativo';
+        openModal(modalPoint);
+      });
+
+      // Delegación de eventos en la tabla
+      const tbody = document.getElementById('operation-tbody');
+
+      // Dynamic Encargados Management
+      let currentTargetRow = null;
+
+      function renderModalAssignedReceptors() {
+        const container = document.getElementById('modal-assigned-receptors-list');
+        if (!container || !currentTargetRow) return;
+
+        const chips = Array.from(currentTargetRow.querySelectorAll('.btn-edit-receptor span'))
+          .map(s => s.textContent.trim())
+          .filter(e => e && e !== 'Por definir' && e !== 'Inoperativo');
+
+        if (chips.length === 0) {
+          container.innerHTML = '<p class="text-xs text-muted" style="padding: 6px;">No hay encargados asignados actualmente a este punto.</p>';
+          return;
+        }
+
+        container.innerHTML = chips.map(email => `
+          <div class="flex items-center justify-between" style="padding: 8px 12px; background: var(--white); border-radius: 6px; border: 1px solid var(--neutral-200);">
+            <div class="flex items-center gap-2">
+              <i class="ph ph-envelope-simple" style="color: var(--noki-navy); font-size: 1.1rem;"></i>
+              <span style="font-weight: 600; font-size: 0.85rem; color: var(--neutral-900);">${email}</span>
+            </div>
+            <button type="button" class="btn-delete-assigned-receptor" data-email="${email}" title="Eliminar a este encargado" style="color: #DC2626; background: #FEE2E2; border: none; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+              <i class="ph ph-trash" style="font-size: 0.9rem;"></i>
+              Eliminar
+            </button>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('.btn-delete-assigned-receptor').forEach(btn => {
+          btn.addEventListener('click', function () {
+            const emailToDelete = this.getAttribute('data-email');
+            removeReceptorFromRow(currentTargetRow, emailToDelete);
+            renderModalAssignedReceptors();
+          });
+        });
+      }
+
+      function removeReceptorFromRow(row, email) {
+        const chipsContainer = row.querySelector('.chips-container');
+        if (!chipsContainer) return;
+
+        const matchingBtns = Array.from(chipsContainer.querySelectorAll('.btn-edit-receptor'))
+          .filter(btn => btn.querySelector('span')?.textContent.trim() === email);
+
+        matchingBtns.forEach(btn => btn.remove());
+
+        if (chipsContainer.querySelectorAll('.btn-edit-receptor').length === 0) {
+          const pointName = row.querySelector('td strong')?.textContent || 'Punto';
+          chipsContainer.innerHTML = `
+            <button type="button" class="operacion-chip operacion-chip--empty btn-edit-receptor" data-email="Por definir" data-point="${pointName}" title="Asignar receptor">
+              <span>Por definir</span>
+              <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+            </button>`;
+        }
+      }
+
+      function addReceptorToRow(row, email) {
+        const chipsContainer = row.querySelector('.chips-container');
+        if (!chipsContainer) return;
+
+        const pointName = row.querySelector('td strong')?.textContent || 'Punto';
+
+        const emptyBtns = chipsContainer.querySelectorAll('.operacion-chip--empty');
+        emptyBtns.forEach(btn => btn.remove());
+
+        const existing = Array.from(chipsContainer.querySelectorAll('.btn-edit-receptor span'))
+          .some(s => s.textContent.trim().toLowerCase() === email.toLowerCase());
+
+        if (!existing) {
+          const newBtn = document.createElement('button');
+          newBtn.type = 'button';
+          newBtn.className = 'operacion-chip btn-edit-receptor';
+          newBtn.setAttribute('data-email', email);
+          newBtn.setAttribute('data-point', pointName);
+          newBtn.title = 'Editar receptor asignado';
+          newBtn.innerHTML = `<span>${email}</span><i class="ph ph-pencil-simple" aria-hidden="true"></i>`;
+          chipsContainer.appendChild(newBtn);
+        }
+      }
+
+      // Handle table click delegation
+      tbody?.addEventListener('click', function (e) {
+        const receptorBtn = e.target.closest('.btn-edit-receptor');
+        if (receptorBtn) {
+          currentTargetRow = receptorBtn.closest('tr');
+          const point = currentTargetRow.querySelector('td strong')?.textContent || receptorBtn.getAttribute('data-point');
+          document.getElementById('receptor-point-target').textContent = point;
+          renderModalAssignedReceptors();
+          document.getElementById('form-new-receptor')?.reset();
+          openModal(modalReceptor);
+          return;
+        }
+
+        const scheduleBtn = e.target.closest('.btn-edit-schedule');
+        if (scheduleBtn) {
+          const schedule = scheduleBtn.getAttribute('data-schedule');
+          const point = scheduleBtn.getAttribute('data-point');
+          document.getElementById('schedule-point-target').textContent = point;
+          openModal(modalSchedule);
+          return;
+        }
+
+        const viewBtn = e.target.closest('.btn-view-point');
+        if (viewBtn) {
+          const row = viewBtn.closest('tr');
+          const placeName = row.querySelector('td strong')?.textContent || 'Punto';
+          const status = row.getAttribute('data-status');
+          const statusText = row.querySelector('.badge-directory')?.textContent || '';
+          const encargadoText = Array.from(row.querySelectorAll('.btn-edit-receptor span')).map(s => s.textContent).join(', ');
+          const scheduleText = row.querySelector('.btn-edit-schedule span')?.textContent || '';
+
+          const content = document.getElementById('modal-point-view-content');
+          if (content) {
+            content.innerHTML = `
+              <div style="line-height: 1.8;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1B5E20; margin-bottom: 8px;">${placeName}</h3>
+                <p><strong>Estado operativo:</strong> <span class="badge-directory badge-directory--${status}">${statusText}</span></p>
+                <p><strong>Receptores asignados:</strong> ${encargadoText || 'Por definir'}</p>
+                <p><strong>Franja horaria vigente:</strong> ${scheduleText}</p>
+                <p><strong>Entidad de servidor:</strong> Punto académico operativo.</p>
+                <p><strong>Trazabilidad:</strong> Franjas y cambios registrados con auditoría de usuario.</p>
+              </div>
+            `;
+          }
+          openModal(modalViewPoint);
+        }
+      });
+
+      // Submit Formulario Crear Ficha / Nuevo Encargado
+      document.getElementById('form-new-receptor')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const nameInput = document.getElementById('new-receptor-name');
+        const emailInput = document.getElementById('new-receptor-email');
+        const passInput = document.getElementById('new-receptor-pass');
+
+        const email = emailInput?.value.trim();
+        const pass = passInput?.value.trim();
+        const name = nameInput?.value.trim() || email;
+
+        if (!email || !pass) {
+          alert('Por favor ingresa un correo administrativo y una contraseña válidos.');
+          return;
+        }
+
+        if (currentTargetRow) {
+          addReceptorToRow(currentTargetRow, email);
+          renderModalAssignedReceptors();
+          emailInput.value = '';
+          passInput.value = '';
+          if (nameInput) nameInput.value = '';
+          alert(`Ficha creada y encargado [${email}] asignado exitosamente.`);
+        }
+      });
+
+      document.getElementById('form-point')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        alert('Punto académico guardado con éxito.');
+        closeModal(modalPoint);
+      });
+
+      document.getElementById('form-schedule')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        alert('Franja horaria programada exitosamente.');
+        closeModal(modalSchedule);
+      });
+
+    })();
+  </script>
+</body>
+</html>

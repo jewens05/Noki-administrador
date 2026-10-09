@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Noki Administración — Acceso al panel administrativo para la gestión de puntos, jornadas, entregas y directorio.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Acceso — Noki Administración</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Logos/Flagicon.png">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Estilos compartidos -->
+  <link rel="stylesheet" href="estilos.css">
+  <!-- Módulo de accesibilidad -->
+  <script src="accesibilidad.js"></script>
+</head>
+
+<body>
+  <!-- ====================================================
+       PÁGINA DE ACCESO ADMINISTRATIVO (AUI-01)
+       Sin sidebar ni topbar — pantalla única de login.
+       No muestra datos operativos de fondo (AF-01).
+       ==================================================== -->
+
+  <main class="login-page" id="login-page">
+    <!-- Barra de Accesibilidad (Usabilidad: Solo tamaño de texto en Login) -->
+    <div class="login-accessibility-bar" role="region" aria-label="Controles de accesibilidad">
+      <button type="button" class="accessibility-btn" id="btn-font-size" title="Aumentar tamaño de texto" aria-label="Aumentar tamaño de texto">
+        <span style="font-weight: 800; font-size: 1.1rem; line-height: 1;">A<sup style="font-size: 0.7rem; font-weight: 900;">+</sup></span>
+        <span class="accessibility-badge" id="font-size-badge">100%</span>
+      </button>
+    </div>
+
+    <!-- Fondo con e-waste -->
+    <div class="login-page__bg" aria-hidden="true"></div>
+    <div class="login-page__overlay" aria-hidden="true"></div>
+
+    <!-- Contenedor principal -->
+    <div class="login-container">
+
+      <!-- Logo institucional NOKI -->
+      <div class="login-logo">
+        <img 
+          src="Logos/Logo sobre fondos ocuros2.png" 
+          alt="Noki — Panel de Administración"
+          width="280"
+          height="auto"
+          id="login-logo"
+        >
+      </div>
+
+      <!-- Card de acceso -->
+      <div class="login-card" role="region" aria-labelledby="login-title">
+        <h1 class="login-card__title" id="login-title">Acceso administrativo</h1>
+
+        <!-- Formulario de login -->
+        <form class="login-form" id="login-form" novalidate autocomplete="off">
+
+          <!-- Mensaje de error global -->
+          <div class="login-error" id="login-error" role="alert" aria-live="polite">
+            <i class="ph ph-warning-circle"></i>
+            <span id="login-error-text">Credenciales incorrectas. Verifica tu correo y contraseña.</span>
+          </div>
+
+          <!-- Correo electrónico -->
+          <div class="login-input-group">
+            <div class="login-input-group__icon" aria-hidden="true">
+              <img src="Iconos/Correo electronico.png" alt="">
+            </div>
+            <label for="login-email" class="sr-only">Correo electrónico</label>
+            <input
+              type="email"
+              id="login-email"
+              name="email"
+              class="login-input"
+              placeholder="Correo electrónico"
+              required
+              autocomplete="email"
+              aria-describedby="login-error-text"
+            >
+          </div>
+
+          <!-- Contraseña -->
+          <div class="login-input-group">
+            <div class="login-input-group__icon" aria-hidden="true">
+              <img src="Iconos/Bloqueado - contraseña.png" alt="">
+            </div>
+            <label for="login-password" class="sr-only">Contraseña</label>
+            <input
+              type="password"
+              id="login-password"
+              name="password"
+              class="login-input"
+              placeholder="Contraseña"
+              required
+              autocomplete="current-password"
+              aria-describedby="login-error-text"
+              style="padding-right: 52px;"
+            >
+            <button 
+              type="button" 
+              class="login-input-group__toggle" 
+              id="toggle-password"
+              aria-label="Mostrar u ocultar contraseña"
+              tabindex="0"
+            >
+              <img src="Iconos/No ver.png" alt="" id="toggle-password-icon">
+            </button>
+          </div>
+
+          <!-- Botón Ingresar -->
+          <button type="submit" class="login-btn" id="login-submit">
+            Ingresar
+          </button>
+
+          <!-- Aviso de acceso exclusivo (AF-01) -->
+          <p class="login-notice">
+            (Este panel es para uso netamente administrativo. Cualquier persona que entre sin autorización 
+            o haga un mal manejo del programa será sancionada.)
+          </p>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ====================================================
+       JAVASCRIPT — Lógica del Login
+       ==================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // DOM Elements
+      const form       = document.getElementById('login-form');
+      const emailInput = document.getElementById('login-email');
+      const passInput  = document.getElementById('login-password');
+      const submitBtn  = document.getElementById('login-submit');
+      const errorBox   = document.getElementById('login-error');
+      const errorText  = document.getElementById('login-error-text');
+      const toggleBtn  = document.getElementById('toggle-password');
+      const toggleIcon = document.getElementById('toggle-password-icon');
+
+      // ---- Toggle contraseña ----
+      let passwordVisible = false;
+
+      toggleBtn.addEventListener('click', function () {
+        passwordVisible = !passwordVisible;
+        passInput.type = passwordVisible ? 'text' : 'password';
+        toggleIcon.src = passwordVisible 
+          ? 'Iconos/Ver.png' 
+          : 'Iconos/No ver.png';
+        toggleBtn.setAttribute(
+          'aria-label',
+          passwordVisible ? 'Ocultar contraseña' : 'Mostrar contraseña'
+        );
+      });
+
+      // ---- Validación de campos ----
+      function validateEmail(email) {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      }
+
+      function showError(message) {
+        errorText.textContent = message;
+        errorBox.classList.add('visible');
+        errorBox.focus();
+      }
+
+      function hideError() {
+        errorBox.classList.remove('visible');
+      }
+
+      // ---- Submit del formulario ----
+      form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        hideError();
+
+        const email    = emailInput.value.trim();
+        const password = passInput.value;
+
+        // Validaciones de cliente
+        if (!email) {
+          showError('Ingresa tu correo electrónico.');
+          emailInput.focus();
+          return;
+        }
+
+        if (!validateEmail(email)) {
+          showError('El formato del correo electrónico no es válido.');
+          emailInput.focus();
+          return;
+        }
+
+        if (!password) {
+          showError('Ingresa tu contraseña.');
+          passInput.focus();
+          return;
+        }
+
+        // Deshabilitar doble envío (ANF-05)
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Ingresando…';
+
+        try {
+          await new Promise(resolve => setTimeout(resolve, 800));
+
+          const cleanEmail = email.toLowerCase();
+
+          if (cleanEmail === 'jcaro@noki.co' && password === '1234567a') {
+            sessionStorage.setItem('noki-admin-role', 'administrador');
+            sessionStorage.setItem('noki-admin-user', 'jcaro');
+            sessionStorage.setItem('noki-admin-name', 'Jeffry Caro');
+            sessionStorage.setItem('noki-admin-email', 'JCaro@Noki.co');
+            window.location.href = 'resumen.html';
+          } else if (cleanEmail === 'lcastaneda@noki.co' && password === '1234567a') {
+            sessionStorage.setItem('noki-admin-role', 'administrador');
+            sessionStorage.setItem('noki-admin-user', 'lcastaneda');
+            sessionStorage.setItem('noki-admin-name', 'Luis Castañeda');
+            sessionStorage.setItem('noki-admin-email', 'LCastaneda@Noki.co');
+            window.location.href = 'resumen.html';
+          } else if ((cleanEmail === 'arodriguez@noki.co' || cleanEmail === 'arodriguez') && password === '1234567a') {
+            sessionStorage.setItem('noki-admin-role', 'receptor');
+            sessionStorage.setItem('noki-admin-user', 'arodriguez');
+            sessionStorage.setItem('noki-admin-name', 'Ángel Rodriguez');
+            sessionStorage.setItem('noki-admin-email', 'ARodriguez@noki.co');
+            window.location.href = 'resumen.html';
+          } else {
+            showError('cuenta no encontrada o contraseña incorrecta');
+          }
+
+        } catch (err) {
+          showError('cuenta no encontrada o contraseña incorrecta');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Ingresar';
+        }
+      });
+
+      // ---- Limpiar error al escribir ----
+      emailInput.addEventListener('input', hideError);
+      passInput.addEventListener('input', hideError);
+
+      // ---- Comprobar sesión existente ----
+      // Si ya hay sesión, redirigir al resumen sin mostrar login
+      const existingRole = sessionStorage.getItem('noki-admin-role');
+      if (existingRole) {
+        window.location.href = 'resumen.html';
+      }
+
+    })();
+  </script>
+</body>
+</html>

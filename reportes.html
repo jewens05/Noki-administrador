@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Noki Administración — Módulo de Reportes: consulta, visualiza y descarga reportes diarios, semanales y mensuales de recolecta de e-waste.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Reportes — Noki</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Logos/Flagicon.png">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Estilos compartidos -->
+  <link rel="stylesheet" href="estilos.css">
+  <!-- Módulo de accesibilidad -->
+  <script src="accesibilidad.js"></script>
+</head>
+
+<body>
+  <!-- ====================================================
+       LAYOUT MAESTRO COMPARTIDO (Sidebar + Topbar)
+       Vista: Módulo de Reportes
+       ==================================================== -->
+  <div class="app-layout">
+
+    <!-- --------------------------------------------------
+         SIDEBAR INSTITUCIONAL (Fijo a la izquierda)
+         -------------------------------------------------- -->
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal de navegación">
+      <!-- Marca NOKI -->
+      <div class="sidebar__brand">
+        <a href="resumen.html" aria-label="Ir al inicio del panel">
+          <img 
+            src="Logos/Logo sobre fondos oscuros.png" 
+            alt="Noki Administración" 
+            width="140" 
+            height="auto"
+          >
+        </a>
+      </div>
+
+      <!-- Navegación -->
+      <nav class="sidebar__nav">
+        <a href="resumen.html" class="sidebar__link">
+          <i class="ph ph-squares-four" aria-hidden="true"></i>
+          <span>Inicio</span>
+        </a>
+
+        <a href="directorio.html" class="sidebar__link">
+          <i class="ph ph-buildings" aria-hidden="true"></i>
+          <span>Directorio</span>
+        </a>
+
+        <a href="operacion.html" class="sidebar__link">
+          <i class="ph ph-lightning" aria-hidden="true"></i>
+          <span>Receptores y horarios</span>
+        </a>
+
+        <a href="entregas.html" class="sidebar__link">
+          <i class="ph ph-truck" aria-hidden="true"></i>
+          <span>Supervisión de entrega</span>
+        </a>
+
+        <!-- Reportes ACTIVO -->
+        <a href="reportes.html" class="sidebar__link sidebar__link--active" aria-current="page">
+          <i class="ph ph-file-text" aria-hidden="true"></i>
+          <span>Reportes</span>
+        </a>
+
+        <a href="aprende.html" class="sidebar__link">
+          <i class="ph ph-book-open" aria-hidden="true"></i>
+          <span>Módulo Aprende</span>
+        </a>
+      </nav>
+
+      <!-- Isotipo / Ilustración institucional decorativa (inferior) -->
+      <div class="sidebar__decor" aria-hidden="true">
+        <img src="Iconos/Operación.png" alt="">
+      </div>
+    </aside>
+
+    <!-- Overlay oscuro para versión móvil -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- --------------------------------------------------
+         ÁREA PRINCIPAL DE CONTENIDO
+         -------------------------------------------------- -->
+    <div class="main-wrapper">
+
+      <!-- TOPBAR SUPERIOR (Sticky) -->
+      <header class="topbar" role="banner">
+        <div class="flex items-center gap-4">
+          <!-- Botón hamburguesa móvil -->
+          <button 
+            type="button" 
+            class="sidebar-toggle" 
+            id="sidebar-toggle" 
+            aria-label="Abrir menú lateral"
+            aria-expanded="false"
+          >
+            <i class="ph ph-list" aria-hidden="true"></i>
+          </button>
+
+          <!-- Título de la vista -->
+          <span class="topbar__title">Panel de administración</span>
+        </div>
+
+        <!-- Acciones del Topbar -->
+        <div class="topbar__actions">
+          <!-- Controles de Accesibilidad (Usabilidad) -->
+          <div class="accessibility-controls" role="region" aria-label="Controles de accesibilidad">
+            <button type="button" class="accessibility-btn" id="btn-font-size" title="Aumentar tamaño de texto" aria-label="Aumentar tamaño de texto">
+              <span style="font-weight: 800; font-size: 1.1rem; line-height: 1;">A<sup style="font-size: 0.7rem; font-weight: 900;">+</sup></span>
+              <span class="accessibility-badge" id="font-size-badge">100%</span>
+            </button>
+            <button type="button" class="accessibility-btn" id="btn-theme-toggle" title="Cambiar contraste (Claro / Oscuro)" aria-label="Cambiar contraste">
+              <i class="ph ph-moon" id="theme-toggle-icon" style="font-size: 1.2rem;" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Notificaciones y Menú Desplegable -->
+          <div class="topbar__notifications-wrapper" style="position: relative;">
+            <button 
+              type="button" 
+              class="topbar__icon-btn" 
+              id="notifications-btn" 
+              aria-label="Notificaciones del sistema"
+              aria-expanded="false"
+              aria-haspopup="true"
+              title="Notificaciones"
+            >
+              <img src="Iconos/Iconos negros/Notificacion.png" alt="" width="22" height="22">
+              <span class="notification-dot" style="position: absolute; top: 6px; right: 6px; width: 9px; height: 9px; background: #DC2626; border-radius: 50%; border: 2px solid var(--white);"></span>
+            </button>
+
+            <!-- Menú desplegable de notificaciones -->
+            <div class="notifications-dropdown-menu" id="notifications-dropdown" role="menu" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); width: 340px; background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-xl); border: 1px solid var(--neutral-200); z-index: 1000; padding: 0; overflow: hidden;">
+              <div style="padding: 12px 16px; background: var(--noki-navy); color: #FFFFFF; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 700; font-size: 0.875rem;">Notificaciones</span>
+                <span class="notification-count-badge" style="font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">3 nuevas</span>
+              </div>
+              <div style="max-height: 280px; overflow-y: auto;">
+                <a href="entregas.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E8F5E9; color: #1B5E20; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-package" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Nueva entrega recibida</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Se acaba de recibir una nueva entrega (#E1093) en Centro de Acopio Manrique.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 5 minutos</span>
+                  </div>
+                </a>
+                <a href="operacion.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E3F2FD; color: #1565C0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-clock" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Horario actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">El punto UdeM habilitó franja de 06:00 AM - 08:00 PM.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 25 minutos</span>
+                  </div>
+                </a>
+                <a href="directorio.html" style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #FFF8E1; color: #F57F17; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-buildings" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Directorio actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Ficha de Centro Plaza Botero fue marcada en remodelación.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 1 hora</span>
+                  </div>
+                </a>
+              </div>
+              <div style="padding: 8px 16px; background: var(--neutral-50); border-top: 1px solid var(--neutral-100); text-align: center;">
+                <button type="button" id="btn-mark-notifications-read" style="font-size: 0.75rem; color: var(--noki-green-800); font-weight: 600; background: none; border: none; cursor: pointer;">
+                  Marcar todas como leídas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divisor vertical -->
+          <div class="topbar__divider" aria-hidden="true"></div>
+
+          <!-- Perfil de usuario y Dropdown -->
+          <div class="topbar__user-wrapper">
+            <button 
+              type="button" 
+              class="topbar__user" 
+              id="user-menu-btn" 
+              aria-expanded="false" 
+              aria-haspopup="true"
+            >
+              <div class="topbar__avatar" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Foto de perfil.png" alt="Foto de perfil">
+              </div>
+              <div class="topbar__user-info">
+                <span class="topbar__user-name" id="user-display-name">Jeffry Caro</span>
+                <span class="topbar__user-email" id="user-display-email" style="font-size: 0.7rem; color: var(--neutral-500); display: block; line-height: 1.2;">JCaro@Noki.co</span>
+                <span class="topbar__user-role" id="user-display-role">Administrador</span>
+              </div>
+              <span class="topbar__dropdown-btn" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Flecha abajo.png" width="16" height="16" alt="">
+              </span>
+            </button>
+
+            <!-- Menú desplegable de usuario (Solo Cerrar Sesión) -->
+            <div class="user-dropdown-menu" id="user-dropdown" role="menu">
+              <div class="user-dropdown-header">
+                <div class="fw-semibold text-sm" id="dropdown-user-name">Jeffry Caro</div>
+                <div class="text-xs" style="color: var(--neutral-500); margin-bottom: 2px;">
+                  Correo vinculado: <strong id="dropdown-user-email">JCaro@Noki.co</strong>
+                </div>
+                <div class="text-xs text-muted" id="dropdown-user-role">Rol: Administrador</div>
+              </div>
+
+              <button type="button" class="user-dropdown-item user-dropdown-item--danger" id="btn-logout" role="menuitem">
+                <i class="ph ph-sign-out"></i>
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- CONTENIDO DE LA PÁGINA (Reportes) -->
+      <main class="page-content" id="main-content">
+
+        <!-- ENCABEZADO DE VISTA -->
+        <div class="page-title-group mb-6">
+          <div>
+            <h1 class="page-title">Reportes</h1>
+            <p class="page-subtitle">Generación, consulta y análisis de reportes periódicos de la red de acopio e-waste</p>
+          </div>
+        </div>
+
+        <!-- BARRA DE BÚSQUEDA Y FILTROS RÁPIDOS -->
+        <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+          <!-- Input de búsqueda -->
+          <div class="search-pill-wrapper" style="margin-bottom: 0;">
+            <i class="ph ph-magnifying-glass search-pill-icon" aria-hidden="true"></i>
+            <label for="search-report-input" class="sr-only">Buscar por codigo de lote, usuario o punto</label>
+            <input 
+              type="search" 
+              class="search-pill-input" 
+              id="search-report-input" 
+              placeholder="Buscar por codigo de lote, usuario o punto....."
+              autocomplete="off"
+            >
+          </div>
+
+          <!-- Filtros de estado / periodicidad y selector de punto -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-2" role="group" aria-label="Filtrar por tipo de reporte">
+              <button type="button" class="btn btn--secondary btn--sm filter-report-btn active" data-filter="todos">
+                Todos (7)
+              </button>
+              <button type="button" class="btn btn--ghost btn--sm filter-report-btn" data-filter="diario">
+                Diario (3)
+              </button>
+              <button type="button" class="btn btn--ghost btn--sm filter-report-btn" data-filter="semanal">
+                Semanal (2)
+              </button>
+              <button type="button" class="btn btn--ghost btn--sm filter-report-btn" data-filter="mensual">
+                Mensual (2)
+              </button>
+            </div>
+
+            <!-- Selector de punto -->
+            <label for="filter-point-select" class="sr-only">Filtrar por punto</label>
+            <select class="form-select text-sm" id="filter-point-select" style="width: auto; min-width: 170px;">
+              <option value="todos">Todos los puntos</option>
+              <option value="Manrique">Manrique</option>
+              <option value="Terminal del sur">Terminal del sur</option>
+              <option value="Doce de Octubre">Doce de Octubre</option>
+              <option value="Guayabal">Guayabal</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- TABLA PRINCIPAL DE REPORTES -->
+        <div class="directory-card" role="region" aria-labelledby="reports-table-label">
+          <h2 id="reports-table-label" class="sr-only">Listado de reportes generados</h2>
+          <table class="directory-table" id="reports-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 20%;">Reporte</th>
+                <th scope="col" style="width: 22%;">Tipo</th>
+                <th scope="col" style="width: 24%;">Fecha</th>
+                <th scope="col" style="width: 20%;">Resumen operativo</th>
+                <th scope="col" style="width: 14%; text-align: center;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="reports-tbody">
+
+              <!-- Fila 1: Reporte Diario 07 Oct -->
+              <tr data-type="diario" data-code="REP-2026-1007">
+                <td>
+                  <strong style="color: var(--noki-navy);">REP-2026-1007</strong>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional" style="font-weight: 600;">Reporte diario</span>
+                </td>
+                <td>
+                  <span class="text-sm">07 de Octubre de 2026</span>
+                </td>
+                <td>
+                  <span class="text-sm">42 entregas (128 unidades e-waste)</span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-group" style="justify-content: center; display: inline-flex; gap: 8px;">
+                    <button type="button" class="btn-icon-action btn-view-report" title="Ver detalle del reporte" aria-label="Ver detalle del reporte REP-2026-1007">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-download-report" title="Descargar reporte en CSV" aria-label="Descargar reporte REP-2026-1007">
+                      <i class="ph ph-download-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 2: Reporte Diario 06 Oct -->
+              <tr data-type="diario" data-code="REP-2026-1006">
+                <td>
+                  <strong style="color: var(--noki-navy);">REP-2026-1006</strong>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional" style="font-weight: 600;">Reporte diario</span>
+                </td>
+                <td>
+                  <span class="text-sm">06 de Octubre de 2026</span>
+                </td>
+                <td>
+                  <span class="text-sm">38 entregas (112 unidades e-waste)</span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-group" style="justify-content: center; display: inline-flex; gap: 8px;">
+                    <button type="button" class="btn-icon-action btn-view-report" title="Ver detalle del reporte" aria-label="Ver detalle del reporte REP-2026-1006">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-download-report" title="Descargar reporte en CSV" aria-label="Descargar reporte REP-2026-1006">
+                      <i class="ph ph-download-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 3: Reporte Diario 05 Oct -->
+              <tr data-type="diario" data-code="REP-2026-1005">
+                <td>
+                  <strong style="color: var(--noki-navy);">REP-2026-1005</strong>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional" style="font-weight: 600;">Reporte diario</span>
+                </td>
+                <td>
+                  <span class="text-sm">05 de Octubre de 2026</span>
+                </td>
+                <td>
+                  <span class="text-sm">45 entregas (135 unidades e-waste)</span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-group" style="justify-content: center; display: inline-flex; gap: 8px;">
+                    <button type="button" class="btn-icon-action btn-view-report" title="Ver detalle del reporte" aria-label="Ver detalle del reporte REP-2026-1005">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-download-report" title="Descargar reporte en CSV" aria-label="Descargar reporte REP-2026-1005">
+                      <i class="ph ph-download-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 4: Reporte Semanal W40 -->
+              <tr data-type="semanal" data-code="REP-2026-W40">
+                <td>
+                  <strong style="color: var(--noki-navy);">REP-2026-W40</strong>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--remodelacion" style="font-weight: 600; background: #E0F2FE; color: #0369A1;">Reporte semanal</span>
+                </td>
+                <td>
+                  <span class="text-sm">Semana 40 (01 - 07 Octubre 2026)</span>
+                </td>
+                <td>
+                  <span class="text-sm">245 entregas (780 unidades e-waste)</span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-group" style="justify-content: center; display: inline-flex; gap: 8px;">
+                    <button type="button" class="btn-icon-action btn-view-report" title="Ver detalle del reporte" aria-label="Ver detalle del reporte REP-2026-W40">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-download-report" title="Descargar reporte en CSV" aria-label="Descargar reporte REP-2026-W40">
+                      <i class="ph ph-download-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 5: Reporte Semanal W39 -->
+              <tr data-type="semanal" data-code="REP-2026-W39">
+                <td>
+                  <strong style="color: var(--noki-navy);">REP-2026-W39</strong>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--remodelacion" style="font-weight: 600; background: #E0F2FE; color: #0369A1;">Reporte semanal</span>
+                </td>
+                <td>
+                  <span class="text-sm">Semana 39 (24 - 30 Septiembre 2026)</span>
+                </td>
+                <td>
+                  <span class="text-sm">210 entregas (690 unidades e-waste)</span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-group" style="justify-content: center; display: inline-flex; gap: 8px;">
+                    <button type="button" class="btn-icon-action btn-view-report" title="Ver detalle del reporte" aria-label="Ver detalle del reporte REP-2026-W39">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-download-report" title="Descargar reporte en CSV" aria-label="Descargar reporte REP-2026-W39">
+                      <i class="ph ph-download-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 6: Reporte Mensual M09 -->
+              <tr data-type="mensual" data-code="REP-2026-M09">
+                <td>
+                  <strong style="color: var(--noki-navy);">REP-2026-M09</strong>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--inoperativo" style="font-weight: 600; background: #EDE9FE; color: #6D28D9;">Reporte mensual</span>
+                </td>
+                <td>
+                  <span class="text-sm">Mes de Septiembre 2026</span>
+                </td>
+                <td>
+                  <span class="text-sm">980 entregas (3,120 unidades e-waste)</span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-group" style="justify-content: center; display: inline-flex; gap: 8px;">
+                    <button type="button" class="btn-icon-action btn-view-report" title="Ver detalle del reporte" aria-label="Ver detalle del reporte REP-2026-M09">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-download-report" title="Descargar reporte en CSV" aria-label="Descargar reporte REP-2026-M09">
+                      <i class="ph ph-download-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 7: Reporte Mensual M08 -->
+              <tr data-type="mensual" data-code="REP-2026-M08">
+                <td>
+                  <strong style="color: var(--noki-navy);">REP-2026-M08</strong>
+                </td>
+                <td>
+                  <span class="badge-directory badge-directory--inoperativo" style="font-weight: 600; background: #EDE9FE; color: #6D28D9;">Reporte mensual</span>
+                </td>
+                <td>
+                  <span class="text-sm">Mes de Agosto 2026</span>
+                </td>
+                <td>
+                  <span class="text-sm">890 entregas (2,850 unidades e-waste)</span>
+                </td>
+                <td style="text-align: center;">
+                  <div class="action-buttons-group" style="justify-content: center; display: inline-flex; gap: 8px;">
+                    <button type="button" class="btn-icon-action btn-view-report" title="Ver detalle del reporte" aria-label="Ver detalle del reporte REP-2026-M08">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-download-report" title="Descargar reporte en CSV" aria-label="Descargar reporte REP-2026-M08">
+                      <i class="ph ph-download-simple" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ====================================================
+       MODAL DE DETALLE DEL REPORTE (VER)
+       ==================================================== -->
+  <div class="modal-backdrop" id="modal-view-report" role="dialog" aria-modal="true" aria-labelledby="modal-report-title">
+    <div class="modal-dialog" style="max-width: 650px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-report-title">Detalle del Reporte: REP-2026-1007</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-report-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-report-content">
+        <!-- Rellenado dinámicamente con JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn--secondary" id="btn-close-report-footer">Cerrar</button>
+        <button type="button" class="btn btn--primary" id="btn-download-modal-report">
+          <i class="ph ph-download-simple" style="font-size: 1rem;"></i>
+          Descargar Reporte CSV
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       JAVASCRIPT — Lógica y Control del Módulo de Reportes
+       ==================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. Control de Sesión y Perfil
+      const role = sessionStorage.getItem('noki-admin-role') || 'administrador';
+      const userName = sessionStorage.getItem('noki-admin-name') || 'Jeffry Caro';
+      const userEmail = sessionStorage.getItem('noki-admin-email') || 'JCaro@Noki.co';
+
+      const userDisplayName = document.getElementById('user-display-name');
+      const userDisplayRole = document.getElementById('user-display-role');
+      const dropdownUserName = document.getElementById('dropdown-user-name');
+      const dropdownUserRole = document.getElementById('dropdown-user-role');
+
+      if (userDisplayName) userDisplayName.textContent = userName;
+      if (userDisplayRole) userDisplayRole.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+      if (dropdownUserName) dropdownUserName.textContent = userName;
+      if (dropdownUserRole) dropdownUserRole.textContent = 'Rol: ' + (role.charAt(0).toUpperCase() + role.slice(1));
+      const dropdownUserEmail = document.getElementById('dropdown-user-email');
+      if (dropdownUserEmail) dropdownUserEmail.textContent = userEmail;
+      const userDisplayEmail = document.getElementById('user-display-email');
+      if (userDisplayEmail) userDisplayEmail.textContent = userEmail;
+
+      // 2. Dropdown de Usuario
+      const userBtn = document.getElementById('user-menu-btn');
+      const userDropdown = document.getElementById('user-dropdown');
+
+      if (userBtn && userDropdown) {
+        userBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const isActive = userDropdown.classList.contains('active');
+          userDropdown.classList.toggle('active', !isActive);
+          userBtn.setAttribute('aria-expanded', !isActive);
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+            userDropdown.classList.remove('active');
+            userBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      // Logout
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          sessionStorage.removeItem('noki-admin-role');
+          sessionStorage.removeItem('noki-admin-user');
+          sessionStorage.removeItem('noki-admin-name');
+          sessionStorage.removeItem('noki-admin-email');
+          window.location.href = 'index.html';
+        });
+      }
+
+      // 3. Toggle de Sidebar Móvil
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+      }
+
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+          if (sidebar && sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        });
+      }
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      // 4. Filtros por Tipo de Reporte y Búsqueda
+      const searchInput = document.getElementById('search-report-input');
+      const tbody = document.getElementById('reports-tbody');
+      const rows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+      const filterBtns = document.querySelectorAll('.filter-report-btn');
+
+      function filterReportsTable() {
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const activeBtn = document.querySelector('.filter-report-btn.active');
+        const filterType = activeBtn ? activeBtn.getAttribute('data-filter') : 'todos';
+
+        rows.forEach(function (row) {
+          const text = row.textContent.toLowerCase();
+          const type = row.getAttribute('data-type');
+          const matchesQuery = !query || text.includes(query);
+          const matchesType = filterType === 'todos' || type === filterType;
+
+          row.style.display = matchesQuery && matchesType ? '' : 'none';
+        });
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', filterReportsTable);
+      }
+
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filterBtns.forEach(b => {
+            b.classList.remove('active', 'btn--secondary');
+            b.classList.add('btn--ghost');
+          });
+          btn.classList.add('active', 'btn--secondary');
+          btn.classList.remove('btn--ghost');
+          filterReportsTable();
+        });
+      });
+
+      // 5. Modal de Detalle del Reporte (Ver)
+      const modalReport = document.getElementById('modal-view-report');
+      const modalReportTitle = document.getElementById('modal-report-title');
+      const modalReportContent = document.getElementById('modal-report-content');
+      let currentActiveCode = '';
+
+      function openModal(m) {
+        if (m) {
+          m.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeModal(m) {
+        if (m) {
+          m.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+
+      document.getElementById('btn-close-report-modal')?.addEventListener('click', () => closeModal(modalReport));
+      document.getElementById('btn-close-report-footer')?.addEventListener('click', () => closeModal(modalReport));
+
+      if (modalReport) {
+        modalReport.addEventListener('click', function (e) {
+          if (e.target === modalReport) closeModal(modalReport);
+        });
+      }
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') closeModal(modalReport);
+      });
+
+      // Datos detallados simulados por tipo de reporte
+      function getReportDetailsData(code, nameText, dateText) {
+        let isDaily = code.includes('100');
+        let isWeekly = code.includes('W');
+        let totalUnits = isDaily ? '128' : (isWeekly ? '780' : '3,120');
+
+        return `
+          <div style="line-height: 1.6;">
+            <!-- Metadata del Reporte -->
+            <div class="grid-2 mb-4" style="gap: 16px;">
+              <div>
+                <span class="text-xs text-muted" style="display: block; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; color: var(--neutral-500); margin-bottom: 2px;">CÓDIGO DE REPORTE</span>
+                <p class="report-code" style="font-size: 1.1rem; font-weight: 700; color: var(--neutral-900); margin: 0;">${code}</p>
+              </div>
+              <div>
+                <span class="text-xs text-muted" style="display: block; font-size: 0.75rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.04em; color: var(--neutral-500); margin-bottom: 2px;">TIPO Y PERIODO</span>
+                <p style="font-size: 1rem; font-weight: 600; color: var(--neutral-900); margin: 0;">${nameText} — ${dateText}</p>
+              </div>
+            </div>
+
+            <!-- Resumen de KPIs -->
+            <div class="grid-3 mb-4" style="gap: 12px;">
+              <div class="report-kpi-card report-kpi-card--green" style="background: #E8F5E9; padding: 12px; border-radius: 8px; text-align: center;">
+                <span class="report-kpi-label" style="font-size: 0.75rem; color: #1B5E20; font-weight: 700; display: block; text-transform: uppercase;">TOTAL ENTREGAS</span>
+                <p class="report-kpi-value" style="font-size: 1.4rem; font-weight: 800; color: #1B5E20; margin-top: 4px; margin-bottom: 0;">${isDaily ? '42' : (isWeekly ? '245' : '980')}</p>
+              </div>
+              <div class="report-kpi-card report-kpi-card--blue" style="background: #E3F2FD; padding: 12px; border-radius: 8px; text-align: center;">
+                <span class="report-kpi-label" style="font-size: 0.75rem; color: #1565C0; font-weight: 700; display: block; text-transform: uppercase;">UNIDADES E-WASTE</span>
+                <p class="report-kpi-value" style="font-size: 1.4rem; font-weight: 800; color: #1565C0; margin-top: 4px; margin-bottom: 0;">${totalUnits}</p>
+              </div>
+              <div class="report-kpi-card report-kpi-card--yellow" style="background: #FFF8E1; padding: 12px; border-radius: 8px; text-align: center;">
+                <span class="report-kpi-label" style="font-size: 0.75rem; color: #F57F17; font-weight: 700; display: block; text-transform: uppercase;">PUNTOS ACTIVOS</span>
+                <p class="report-kpi-value" style="font-size: 1.4rem; font-weight: 800; color: #F57F17; margin-top: 4px; margin-bottom: 0;">7 de 7</p>
+              </div>
+            </div>
+
+            <hr style="border: none; border-top: 1px solid var(--neutral-200); margin: 16px 0;">
+
+            <h3 style="font-size: 1.05rem; font-weight: 700; margin-bottom: 12px; color: var(--neutral-900);">Desglose por categoría de residuos recolectados:</h3>
+            <div class="table-wrapper mb-3" style="box-shadow: none; border: 1px solid var(--neutral-200); border-radius: 8px; overflow: hidden;">
+              <table class="table" style="font-size: 0.9375rem; width: 100%; border-collapse: collapse;">
+                <thead>
+                  <tr style="background: #1B5E20 !important;">
+                    <th style="padding: 10px 14px; color: #FFFFFF !important; font-weight: 700; font-size: 0.9375rem;">Categoría</th>
+                    <th style="padding: 10px 14px; color: #FFFFFF !important; font-weight: 700; font-size: 0.9375rem; text-align: center;">Unidades</th>
+                    <th style="padding: 10px 14px; color: #FFFFFF !important; font-weight: 700; font-size: 0.9375rem;">Peso estimado</th>
+                    <th style="padding: 10px 14px; color: #FFFFFF !important; font-weight: 700; font-size: 0.9375rem;">Estado de recepción</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">Celulares / Smartphones</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem; text-align: center;"><strong>${isDaily ? '48' : (isWeekly ? '290' : '1,150')}</strong></td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">${isDaily ? '9.6 kg' : (isWeekly ? '58 kg' : '230 kg')}</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;"><span class="badge-directory badge-directory--funcional">Verificado</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">Cargadores y Cables</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem; text-align: center;"><strong>${isDaily ? '52' : (isWeekly ? '310' : '1,240')}</strong></td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">${isDaily ? '6.2 kg' : (isWeekly ? '37 kg' : '148 kg')}</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;"><span class="badge-directory badge-directory--funcional">Verificado</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">Baterías y Pilas</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem; text-align: center;"><strong>${isDaily ? '18' : (isWeekly ? '110' : '450')}</strong></td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">${isDaily ? '3.5 kg' : (isWeekly ? '22 kg' : '90 kg')}</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;"><span class="badge-directory badge-directory--funcional">Verificado</span></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">Periféricos y Componentes</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem; text-align: center;"><strong>${isDaily ? '10' : (isWeekly ? '70' : '280')}</strong></td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;">${isDaily ? '5.0 kg' : (isWeekly ? '35 kg' : '140 kg')}</td>
+                    <td style="padding: 10px 14px; font-size: 0.9375rem;"><span class="badge-directory badge-directory--funcional">Verificado</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Resumen inferior de unidades -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; background: var(--neutral-50); border-radius: 8px; border: 1px solid var(--neutral-200); font-size: 0.9375rem; margin-bottom: 12px;" class="report-summary-bar">
+              <span style="color: var(--neutral-600); font-weight: 500;">Total unidades consolidadas:</span>
+              <strong style="color: #1B5E20; font-size: 0.9375rem; font-weight: 700;">${totalUnits} unidades</strong>
+            </div>
+
+            <div style="background: var(--neutral-50); padding: 12px 16px; border-radius: 8px; font-size: 0.8125rem; color: var(--neutral-600); line-height: 1.5; border: 1px solid var(--neutral-200);" class="report-audit-box">
+              <p style="margin: 0;"><strong>Auditoría de generación:</strong> Reporte consolidado y generado automáticamente por la plataforma Noki Administración el ${new Date().toLocaleDateString('es-CO')}.</p>
+            </div>
+          </div>
+        `;
+      }
+
+      // Event Listeners en la tabla
+      tbody?.addEventListener('click', function (e) {
+        const viewBtn = e.target.closest('.btn-view-report');
+        if (viewBtn) {
+          const row = viewBtn.closest('tr');
+          const code = row.getAttribute('data-code');
+          const nameText = row.querySelector('.badge-directory')?.textContent || 'Reporte';
+          const dateText = row.querySelectorAll('td')[2]?.textContent || '';
+
+          currentActiveCode = code;
+          if (modalReportTitle) modalReportTitle.textContent = `Detalle del Reporte: ${code}`;
+          if (modalReportContent) modalReportContent.innerHTML = getReportDetailsData(code, nameText, dateText);
+          openModal(modalReport);
+          return;
+        }
+
+        const downloadBtn = e.target.closest('.btn-download-report');
+        if (downloadBtn) {
+          const row = downloadBtn.closest('tr');
+          const code = row.getAttribute('data-code');
+          const nameText = row.querySelector('.badge-directory')?.textContent || 'Reporte';
+          const dateText = row.querySelectorAll('td')[2]?.textContent || '';
+          triggerReportDownload(code, nameText, dateText);
+        }
+      });
+
+      // Descargar reporte CSV
+      function triggerReportDownload(code, nameText, dateText) {
+        let csvContent = 'data:text/csv;charset=utf-8,Codigo,Nombre,Periodo,Categoria,Cantidad,Estado\n';
+        csvContent += `"${code}","${nameText}","${dateText}","Celulares y Smartphones","48","Verificado"\n`;
+        csvContent += `"${code}","${nameText}","${dateText}","Cargadores y Cables","52","Verificado"\n`;
+        csvContent += `"${code}","${nameText}","${dateText}","Baterías y Pilas","18","Verificado"\n`;
+        csvContent += `"${code}","${nameText}","${dateText}","Periféricos y Componentes","10","Verificado"\n`;
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement('a');
+        link.setAttribute('href', encodedUri);
+        link.setAttribute('download', `${code}-${nameText.replace(/\s+/g, '-')}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+
+      document.getElementById('btn-download-modal-report')?.addEventListener('click', function () {
+        if (currentActiveCode) {
+          triggerReportDownload(currentActiveCode, 'Reporte', 'Periodo Actual');
+        }
+      });
+
+    })();
+  </script>
+</body>
+</html>

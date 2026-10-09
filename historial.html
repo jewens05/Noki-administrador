@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Noki Administración — Supervisión de historial: consulta el registro inalterable de auditoría, eventos y entregas.">
+  <meta name="robots" content="noindex, nofollow">
+  <!-- Redirección automática al módulo de Reportes -->
+  <script>window.location.href = 'reportes.html';</script>
+  <meta http-equiv="refresh" content="0;url=reportes.html">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Logos/Flagicon.png">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Estilos compartidos del sistema de diseño -->
+  <link rel="stylesheet" href="estilos.css">
+  <!-- Módulo de accesibilidad -->
+  <script src="accesibilidad.js"></script>
+</head>
+
+<body>
+  <!-- ====================================================
+       LAYOUT MAESTRO COMPARTIDO (Sidebar + Topbar)
+       Vista: Supervisión de Historial / Auditoría (Pantalla 6 / AF-16 y AF-17)
+       ==================================================== -->
+  <div class="app-layout">
+
+    <!-- --------------------------------------------------
+         SIDEBAR INSTITUCIONAL (Fijo a la izquierda)
+         -------------------------------------------------- -->
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal de navegación">
+      <!-- Marca NOKI -->
+      <div class="sidebar__brand">
+        <a href="resumen.html" aria-label="Ir al inicio del panel">
+          <img 
+            src="Logos/Logo sobre fondos oscuros.png" 
+            alt="Noki Administración" 
+            width="140" 
+            height="auto"
+          >
+        </a>
+      </div>
+
+      <!-- Navegación -->
+      <nav class="sidebar__nav">
+        <a href="resumen.html" class="sidebar__link">
+          <i class="ph ph-squares-four" aria-hidden="true"></i>
+          <span>Inicio</span>
+        </a>
+
+        <a href="directorio.html" class="sidebar__link">
+          <i class="ph ph-buildings" aria-hidden="true"></i>
+          <span>Directorio</span>
+        </a>
+
+        <a href="operacion.html" class="sidebar__link">
+          <i class="ph ph-lightning" aria-hidden="true"></i>
+          <span>Receptores y horarios</span>
+        </a>
+
+        <a href="entregas.html" class="sidebar__link">
+          <i class="ph ph-truck" aria-hidden="true"></i>
+          <span>Supervisión de entrega</span>
+        </a>
+
+        <!-- Supervisión de historial ACTIVO (Pantalla 6) -->
+        <a href="historial.html" class="sidebar__link sidebar__link--active" aria-current="page">
+          <i class="ph ph-clock-counter-clockwise" aria-hidden="true"></i>
+          <span>Supervisión de historial</span>
+        </a>
+
+        <a href="aprende.html" class="sidebar__link">
+          <i class="ph ph-book-open" aria-hidden="true"></i>
+          <span>Módulo Aprende</span>
+        </a>
+      </nav>
+
+      <!-- Isotipo decorativo institucional -->
+      <div class="sidebar__decor" aria-hidden="true">
+        <img src="Iconos/Operación.png" alt="">
+      </div>
+    </aside>
+
+    <!-- Overlay oscuro para versión móvil -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- --------------------------------------------------
+         ÁREA PRINCIPAL DE CONTENIDO
+         -------------------------------------------------- -->
+    <div class="main-wrapper">
+
+      <!-- TOPBAR SUPERIOR (Sticky) -->
+      <header class="topbar" role="banner">
+        <div class="flex items-center gap-4">
+          <!-- Botón hamburguesa móvil -->
+          <button 
+            type="button" 
+            class="sidebar-toggle" 
+            id="sidebar-toggle" 
+            aria-label="Abrir menú lateral"
+            aria-expanded="false"
+          >
+            <i class="ph ph-list" aria-hidden="true"></i>
+          </button>
+
+          <!-- Título de la vista -->
+          <span class="topbar__title">Panel de administración</span>
+        </div>
+
+        <!-- Acciones del Topbar -->
+        <div class="topbar__actions">
+          <!-- Controles de Accesibilidad (Usabilidad) -->
+          <div class="accessibility-controls" role="region" aria-label="Controles de accesibilidad">
+            <button type="button" class="accessibility-btn" id="btn-font-size" title="Aumentar tamaño de texto" aria-label="Aumentar tamaño de texto">
+              <span style="font-weight: 800; font-size: 1.1rem; line-height: 1;">A<sup style="font-size: 0.7rem; font-weight: 900;">+</sup></span>
+              <span class="accessibility-badge" id="font-size-badge">100%</span>
+            </button>
+            <button type="button" class="accessibility-btn" id="btn-theme-toggle" title="Cambiar contraste (Claro / Oscuro)" aria-label="Cambiar contraste">
+              <i class="ph ph-moon" id="theme-toggle-icon" style="font-size: 1.2rem;" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Notificaciones y Menú Desplegable -->
+          <div class="topbar__notifications-wrapper" style="position: relative;">
+            <button 
+              type="button" 
+              class="topbar__icon-btn" 
+              id="notifications-btn" 
+              aria-label="Notificaciones del sistema"
+              aria-expanded="false"
+              aria-haspopup="true"
+              title="Notificaciones"
+            >
+              <img src="Iconos/Iconos negros/Notificacion.png" alt="" width="22" height="22">
+              <span class="notification-dot" style="position: absolute; top: 6px; right: 6px; width: 9px; height: 9px; background: #DC2626; border-radius: 50%; border: 2px solid var(--white);"></span>
+            </button>
+
+            <!-- Menú desplegable de notificaciones -->
+            <div class="notifications-dropdown-menu" id="notifications-dropdown" role="menu" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); width: 340px; background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-xl); border: 1px solid var(--neutral-200); z-index: 1000; padding: 0; overflow: hidden;">
+              <div style="padding: 12px 16px; background: var(--noki-navy); color: #FFFFFF; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 700; font-size: 0.875rem;">Notificaciones</span>
+                <span class="notification-count-badge" style="font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">3 nuevas</span>
+              </div>
+              <div style="max-height: 280px; overflow-y: auto;">
+                <a href="entregas.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E8F5E9; color: #1B5E20; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-package" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Nueva entrega recibida</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Se acaba de recibir una nueva entrega (#E1093) en Centro de Acopio Manrique.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 5 minutos</span>
+                  </div>
+                </a>
+                <a href="operacion.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E3F2FD; color: #1565C0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-clock" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Horario actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">El punto UdeM habilitó franja de 06:00 AM - 08:00 PM.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 25 minutos</span>
+                  </div>
+                </a>
+                <a href="directorio.html" style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #FFF8E1; color: #F57F17; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-buildings" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Directorio actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Ficha de Centro Plaza Botero fue marcada en remodelación.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 1 hora</span>
+                  </div>
+                </a>
+              </div>
+              <div style="padding: 8px 16px; background: var(--neutral-50); border-top: 1px solid var(--neutral-100); text-align: center;">
+                <button type="button" id="btn-mark-notifications-read" style="font-size: 0.75rem; color: var(--noki-green-800); font-weight: 600; background: none; border: none; cursor: pointer;">
+                  Marcar todas como leídas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divisor vertical -->
+          <div class="topbar__divider" aria-hidden="true"></div>
+
+          <!-- Perfil de usuario y Dropdown -->
+          <div class="topbar__user-wrapper">
+            <button 
+              type="button" 
+              class="topbar__user" 
+              id="user-menu-btn" 
+              aria-expanded="false" 
+              aria-haspopup="true"
+            >
+              <div class="topbar__avatar" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Foto de perfil.png" alt="Foto de perfil">
+              </div>
+              <div class="topbar__user-info">
+                <span class="topbar__user-name" id="user-display-name">Jeffry Caro</span>
+                <span class="topbar__user-email" id="user-display-email" style="font-size: 0.7rem; color: var(--neutral-500); display: block; line-height: 1.2;">JCaro@Noki.co</span>
+                <span class="topbar__user-role" id="user-display-role">Administrador</span>
+              </div>
+              <span class="topbar__dropdown-btn" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Flecha abajo.png" width="16" height="16" alt="">
+              </span>
+            </button>
+
+            <!-- Menú desplegable de usuario -->
+            <div class="user-dropdown-menu" id="user-dropdown" role="menu">
+              <div class="user-dropdown-header">
+                <div class="fw-semibold text-sm" id="dropdown-user-name">Jeffry Caro</div>
+                <div class="text-xs" style="color: var(--neutral-500); margin-bottom: 2px;">
+                  Correo vinculado: <strong id="dropdown-user-email">JCaro@Noki.co</strong>
+                </div>
+                <div class="text-xs text-muted" id="dropdown-user-role">Rol: Administrador</div>
+              </div>
+
+              <a href="directorio.html" class="user-dropdown-item" role="menuitem">
+                <i class="ph ph-user-gear"></i>
+                <span>Gestionar directorio</span>
+              </a>
+              <a href="entregas.html" class="user-dropdown-item" role="menuitem">
+                <i class="ph ph-truck"></i>
+                <span>Supervisión de entrega</span>
+              </a>
+              <button type="button" class="user-dropdown-item user-dropdown-item--danger" id="btn-logout" role="menuitem">
+                <i class="ph ph-sign-out"></i>
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- CONTENIDO DE LA PÁGINA (Supervisión de Historial) -->
+      <main class="page-content" id="main-content">
+
+        <!-- ==============================================
+             ENCABEZADO DE VISTA (Mockup Pantalla 6)
+             ============================================== -->
+        <div class="page-title-group">
+          <div>
+            <h1 class="page-title">Supervisión de historial</h1>
+            <p class="page-subtitle">Consulta y gestiona todas las entregas</p>
+          </div>
+
+          <!-- Botón Exportar Reporte (Mockup Pantalla 6 - Azul Marino) -->
+          <button type="button" class="btn btn--navy" id="btn-export-history" title="Exportar historial de eventos a CSV">
+            <span>Exportar reporte</span>
+            <i class="ph ph-download-simple" style="margin-left: 6px;" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <!-- ==============================================
+             BARRA DE BÚSQUEDA Y FILTROS RÁPIDOS
+             ============================================== -->
+        <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+          <!-- Input de búsqueda por código, evento o punto -->
+          <div class="search-pill-wrapper" style="margin-bottom: 0;">
+            <i class="ph ph-magnifying-glass search-pill-icon" aria-hidden="true"></i>
+            <label for="search-historial-input" class="sr-only">Buscar por código de lote, usuario o punto</label>
+            <input 
+              type="search" 
+              class="search-pill-input" 
+              id="search-historial-input" 
+              placeholder="Buscar por codigo de lote, usuario o punto....."
+              autocomplete="off"
+            >
+          </div>
+
+          <!-- Filtros de Evento y Punto -->
+          <div class="flex items-center gap-3 flex-wrap">
+            <div class="flex items-center gap-2" role="group" aria-label="Filtrar por tipo de evento">
+              <button type="button" class="btn btn--secondary btn--sm filter-event-btn active" data-filter="todos">
+                Todos (7)
+              </button>
+              <button type="button" class="btn btn--ghost btn--sm filter-event-btn" data-filter="entrega">
+                Entregas (5)
+              </button>
+              <button type="button" class="btn btn--ghost btn--sm filter-event-btn" data-filter="registro">
+                Registros (2)
+              </button>
+            </div>
+
+            <!-- Selector de punto -->
+            <label for="filter-point-historial" class="sr-only">Filtrar por punto</label>
+            <select class="form-select text-sm" id="filter-point-historial" style="width: auto; min-width: 170px;">
+              <option value="todos">Todos los puntos</option>
+              <option value="Manrique">Manrique</option>
+              <option value="Terminal del sur">Terminal del sur</option>
+              <option value="Doce de Octubre">Doce de Octubre</option>
+              <option value="Guayabal">Guayabal</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- ==============================================
+             TABLA DE SUPERVISIÓN DE HISTORIAL (Mockup Pantalla 6)
+             ============================================== -->
+        <div class="directory-card" role="region" aria-labelledby="historial-table-label">
+          <h2 id="historial-table-label" class="sr-only">Listado histórico de auditoría y eventos</h2>
+          <table class="directory-table" id="historial-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 28%;">Codigo</th>
+                <th scope="col" style="width: 24%;">Evento</th>
+                <th scope="col" style="width: 26%;">Punto</th>
+                <th scope="col" style="width: 14%;">Estado</th>
+                <th scope="col" style="width: 8%; text-align: center;">Acción</th>
+              </tr>
+            </thead>
+            <tbody id="historial-tbody">
+              <!-- Fila 1: H2546 -->
+              <tr data-event="entrega" data-point="Manrique" data-code="#H2546">
+                <td>
+                  <strong style="display: block;">#H2546</strong>
+                  <span class="text-xs text-muted">24/09/2026 11:43 AM</span>
+                </td>
+                <td>Entrega de dispositivo</td>
+                <td>Centro de Acopio Manrique</td>
+                <td>
+                  <span class="badge-directory badge-directory--completado">Completado</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-audit" title="Ver detalle de auditoría" aria-label="Ver auditoría #H2546">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 2: H2547 -->
+              <tr data-event="registro" data-point="Terminal del sur" data-code="#H2547">
+                <td>
+                  <strong style="display: block;">#H2547</strong>
+                  <span class="text-xs text-muted">24/09/2026 11:42 AM</span>
+                </td>
+                <td>Registro de dispositivo</td>
+                <td>Centro de Acopio Terminal del sur</td>
+                <td>
+                  <span class="badge-directory badge-directory--completado">Completado</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-audit" title="Ver detalle de auditoría" aria-label="Ver auditoría #H2547">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 3: H2548 -->
+              <tr data-event="entrega" data-point="Doce de Octubre" data-code="#H2548">
+                <td>
+                  <strong style="display: block;">#H2548</strong>
+                  <span class="text-xs text-muted">24/09/2026 11:40 AM</span>
+                </td>
+                <td>Entrega de dispositivo</td>
+                <td>Centro de Acopio Doce de Octubre</td>
+                <td>
+                  <span class="badge-directory badge-directory--completado">Completado</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-audit" title="Ver detalle de auditoría" aria-label="Ver auditoría #H2548">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 4: H2459 (11:35 AM) -->
+              <tr data-event="entrega" data-point="Manrique" data-code="#H2459">
+                <td>
+                  <strong style="display: block;">#H2459</strong>
+                  <span class="text-xs text-muted">24/09/2026 11:35 AM</span>
+                </td>
+                <td>Entrega de dispositivo</td>
+                <td>Centro de Acopio Manrique</td>
+                <td>
+                  <span class="badge-directory badge-directory--completado">Completado</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-audit" title="Ver detalle de auditoría" aria-label="Ver auditoría #H2459">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 5: H2460 -->
+              <tr data-event="entrega" data-point="Guayabal" data-code="#H2460">
+                <td>
+                  <strong style="display: block;">#H2460</strong>
+                  <span class="text-xs text-muted">24/09/2026 11:25 AM</span>
+                </td>
+                <td>Entrega de dispositivo</td>
+                <td>Centro de Acopio Guayabal</td>
+                <td>
+                  <span class="badge-directory badge-directory--completado">Completado</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-audit" title="Ver detalle de auditoría" aria-label="Ver auditoría #H2460">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 6: H2459 (11:23 AM) -->
+              <tr data-event="registro" data-point="Guayabal" data-code="#H2459">
+                <td>
+                  <strong style="display: block;">#H2459</strong>
+                  <span class="text-xs text-muted">24/09/2026 11:23 AM</span>
+                </td>
+                <td>Registro de dispositivo</td>
+                <td>Centro de Acopio Guayabal</td>
+                <td>
+                  <span class="badge-directory badge-directory--completado">Completado</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-audit" title="Ver detalle de auditoría" aria-label="Ver auditoría #H2459">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+
+              <!-- Fila 7: H2458 -->
+              <tr data-event="entrega" data-point="Doce de Octubre" data-code="#H2458">
+                <td>
+                  <strong style="display: block;">#H2458</strong>
+                  <span class="text-xs text-muted">24/09/2026 11:20 AM</span>
+                </td>
+                <td>Entrega de dispositivo</td>
+                <td>Centro de Acopio Doce de Octubre</td>
+                <td>
+                  <span class="badge-directory badge-directory--recibida">Recibida</span>
+                </td>
+                <td style="text-align: center;">
+                  <button type="button" class="btn-icon-action btn-view-audit" title="Ver detalle de auditoría" aria-label="Ver auditoría #H2458">
+                    <i class="ph ph-eye" aria-hidden="true"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- Estado vacío al filtrar -->
+          <div id="historial-empty" class="text-center py-8" style="display: none;">
+            <i class="ph ph-magnifying-glass text-muted" style="font-size: 2.5rem;" aria-hidden="true"></i>
+            <p class="mt-2 fw-medium text-muted">No se encontraron eventos con los filtros seleccionados.</p>
+          </div>
+        </div>
+
+        <div class="mt-6 flex items-center justify-end text-xs text-muted flex-wrap gap-2">
+          <span>Zona horaria: America/Bogota (UTC-5)</span>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       MODAL: DETALLE DE AUDITORÍA Y TRAZABILIDAD (AF-17)
+       ==================================================== -->
+  <div class="modal-backdrop" id="modal-audit-detail" role="dialog" aria-modal="true" aria-labelledby="modal-audit-title">
+    <div class="modal-card" style="max-width: 620px;">
+      <div class="modal-header">
+        <h3 class="modal-title" id="modal-audit-title">Detalle de registro de auditoría</h3>
+        <button type="button" class="modal-close" data-close-modal aria-label="Cerrar modal">
+          <i class="ph ph-x" aria-hidden="true"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body" id="modal-audit-content">
+        <!-- Contenido dinámico inyectado por JS -->
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn--secondary" data-close-modal>Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       SCRIPTS: LÓGICA DE AUDITORÍA, FILTROS Y EXPORTACIÓN
+       ==================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. Verificación de sesión administrativa (AF-01)
+      const userRole = sessionStorage.getItem('noki-admin-role');
+      const userName = sessionStorage.getItem('noki-admin-name') || 'Jeffry Caro';
+      const userEmail = sessionStorage.getItem('noki-admin-email') || 'JCaro@Noki.co';
+      
+      if (document.getElementById('user-display-name')) {
+        document.getElementById('user-display-name').textContent = userName;
+      }
+      if (document.getElementById('dropdown-user-name')) {
+        document.getElementById('dropdown-user-name').textContent = userName;
+      }
+      const dropdownUserEmail = document.getElementById('dropdown-user-email');
+      if (dropdownUserEmail) dropdownUserEmail.textContent = userEmail;
+      const userDisplayEmail = document.getElementById('user-display-email');
+      if (userDisplayEmail) userDisplayEmail.textContent = userEmail;
+      if (userRole && document.getElementById('user-display-role')) {
+        document.getElementById('user-display-role').textContent = userRole === 'admin' ? 'Administrador' : 'Consulta';
+        document.getElementById('dropdown-user-role').textContent = `Rol: ${userRole === 'admin' ? 'Administrador' : 'Consulta'}`;
+      }
+
+      // Logout handler
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          sessionStorage.removeItem('noki-admin-user');
+          sessionStorage.removeItem('noki-admin-role');
+          sessionStorage.removeItem('noki-admin-name');
+          sessionStorage.removeItem('noki-admin-email');
+          window.location.href = 'index.html';
+        });
+      }
+
+      // Toggle drawer móvil
+      const sidebar = document.getElementById('sidebar');
+      const toggle = document.getElementById('sidebar-toggle');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      if (toggle && sidebar && overlay) {
+        toggle.addEventListener('click', function () {
+          const isOpen = sidebar.classList.toggle('sidebar--open');
+          overlay.classList.toggle('sidebar-overlay--active', isOpen);
+          toggle.setAttribute('aria-expanded', isOpen);
+        });
+
+        overlay.addEventListener('click', function () {
+          sidebar.classList.remove('sidebar--open');
+          overlay.classList.remove('sidebar-overlay--active');
+          toggle.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      // Dropdown usuario
+      const userMenuBtn = document.getElementById('user-menu-btn');
+      const userDropdown = document.getElementById('user-dropdown');
+      if (userMenuBtn && userDropdown) {
+        userMenuBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const isExpanded = userMenuBtn.getAttribute('aria-expanded') === 'true';
+          userMenuBtn.setAttribute('aria-expanded', !isExpanded);
+          userDropdown.classList.toggle('show');
+        });
+
+        document.addEventListener('click', function () {
+          userDropdown.classList.remove('show');
+          userMenuBtn.setAttribute('aria-expanded', 'false');
+        });
+      }
+
+      // 2. Control de Modales
+      function openModal(modal) {
+        if (!modal) return;
+        modal.classList.add('modal-backdrop--active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal(modal) {
+        if (!modal) return;
+        modal.classList.remove('modal-backdrop--active');
+        document.body.style.overflow = '';
+      }
+
+      document.querySelectorAll('[data-close-modal]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          const modal = btn.closest('.modal-backdrop');
+          closeModal(modal);
+        });
+      });
+
+      document.querySelectorAll('.modal-backdrop').forEach(function (backdrop) {
+        backdrop.addEventListener('click', function (e) {
+          if (e.target === backdrop) {
+            closeModal(backdrop);
+          }
+        });
+      });
+
+      // 3. Filtro interactivo de la tabla de historial
+      const searchInput = document.getElementById('search-historial-input');
+      const filterBtns = document.querySelectorAll('.filter-event-btn');
+      const pointSelect = document.getElementById('filter-point-historial');
+      const tbody = document.getElementById('historial-tbody');
+      const emptyState = document.getElementById('historial-empty');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+
+      let currentEvent = 'todos';
+      let currentPoint = 'todos';
+      let currentSearch = '';
+
+      function applyFilters() {
+        let visibleCount = 0;
+
+        rows.forEach(function (row) {
+          const rowEvent = row.getAttribute('data-event');
+          const rowPoint = row.getAttribute('data-point');
+          const rowText = row.textContent.toLowerCase();
+
+          const matchesEvent = (currentEvent === 'todos') || (rowEvent === currentEvent);
+          const matchesPoint = (currentPoint === 'todos') || (rowPoint === currentPoint);
+          const matchesSearch = !currentSearch || rowText.includes(currentSearch);
+
+          if (matchesEvent && matchesPoint && matchesSearch) {
+            row.style.display = '';
+            visibleCount++;
+          } else {
+            row.style.display = 'none';
+          }
+        });
+
+        if (emptyState) {
+          emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
+        }
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', function (e) {
+          currentSearch = e.target.value.toLowerCase().trim();
+          applyFilters();
+        });
+      }
+
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filterBtns.forEach(b => {
+            b.classList.remove('btn--secondary', 'active');
+            b.classList.add('btn--ghost');
+          });
+          btn.classList.add('btn--secondary', 'active');
+          btn.classList.remove('btn--ghost');
+
+          currentEvent = btn.getAttribute('data-filter');
+          applyFilters();
+        });
+      });
+
+      if (pointSelect) {
+        pointSelect.addEventListener('change', function (e) {
+          currentPoint = e.target.value;
+          applyFilters();
+        });
+      }
+
+      // 4. Detalle de Auditoría al presionar Ojo (AF-17)
+      const auditDetails = {
+        '#H2546': {
+          code: '#H2546',
+          timestamp: '24/09/2026 11:43:12 AM',
+          event: 'Entrega de dispositivo',
+          point: 'Centro de Acopio Manrique',
+          actor: 'Receptor Autorizado #REC-04 (Carlos Valencia)',
+          actorRole: 'Receptor Operativo',
+          ipAddress: '181.134.22.45 (Medellín, CO)',
+          entity: 'batch_delivery (ID: b94a821e)',
+          status: 'Completado',
+          declaredUnits: '3 unidades (2 Celulares, 1 Batería)',
+          verificationMethod: 'Escaneo QR Dinámico Noki App',
+          integrityHash: 'sha256-a94f83e201b1c67d890e'
+        },
+        '#H2547': {
+          code: '#H2547',
+          timestamp: '24/09/2026 11:42:05 AM',
+          event: 'Registro de dispositivo',
+          point: 'Centro de Acopio Terminal del sur',
+          actor: 'Usuario Ciudadano (camilo.sesto@correo.com)',
+          actorRole: 'Ciudadano Registrado',
+          ipAddress: '190.157.88.12 (Medellín, CO)',
+          entity: 'batch_item_creation (ID: e412c98a)',
+          status: 'Completado',
+          declaredUnits: '1 unidad (Tablet Samsung)',
+          verificationMethod: 'Declaración en app móvil',
+          integrityHash: 'sha256-f831bc40284ab912e71c'
+        },
+        '#H2548': {
+          code: '#H2548',
+          timestamp: '24/09/2026 11:40:48 AM',
+          event: 'Entrega de dispositivo',
+          point: 'Centro de Acopio Doce de Octubre',
+          actor: 'Receptor Autorizado #REC-01 (Mariana Gómez)',
+          actorRole: 'Receptor Operativo',
+          ipAddress: '181.134.25.10 (Medellín, CO)',
+          entity: 'batch_delivery (ID: d78411bc)',
+          status: 'Completado',
+          declaredUnits: '4 unidades (Cables y Cargadores)',
+          verificationMethod: 'Escaneo QR Dinámico Noki App',
+          integrityHash: 'sha256-b72e914032dca812f841'
+        },
+        '#H2459': {
+          code: '#H2459',
+          timestamp: '24/09/2026 11:35:10 AM',
+          event: 'Entrega de dispositivo',
+          point: 'Centro de Acopio Manrique',
+          actor: 'Receptor Autorizado #REC-04 (Carlos Valencia)',
+          actorRole: 'Receptor Operativo',
+          ipAddress: '181.134.22.45 (Medellín, CO)',
+          entity: 'batch_delivery (ID: a129c540)',
+          status: 'Completado',
+          declaredUnits: '2 unidades (Laptops en desuso)',
+          verificationMethod: 'Escaneo QR Dinámico Noki App',
+          integrityHash: 'sha256-c419fa82110284e9b720'
+        },
+        '#H2460': {
+          code: '#H2460',
+          timestamp: '24/09/2026 11:25:30 AM',
+          event: 'Entrega de dispositivo',
+          point: 'Centro de Acopio Guayabal',
+          actor: 'Receptor Autorizado #REC-02 (Diego Martínez)',
+          actorRole: 'Receptor Operativo',
+          ipAddress: '190.157.90.14 (Medellín, CO)',
+          entity: 'batch_delivery (ID: f582103e)',
+          status: 'Completado',
+          declaredUnits: '5 unidades (Baterías de Litio)',
+          verificationMethod: 'Escaneo QR Dinámico Noki App',
+          integrityHash: 'sha256-e910283c741ab024e819'
+        },
+        '#H2458': {
+          code: '#H2458',
+          timestamp: '24/09/2026 11:20:15 AM',
+          event: 'Entrega de dispositivo',
+          point: 'Centro de Acopio Doce de Octubre',
+          actor: 'Receptor Autorizado #REC-01 (Mariana Gómez)',
+          actorRole: 'Receptor Operativo',
+          ipAddress: '181.134.25.10 (Medellín, CO)',
+          entity: 'batch_delivery (ID: a319082f)',
+          status: 'Recibida',
+          declaredUnits: '6 unidades (Celulares y Cargadores)',
+          verificationMethod: 'Escaneo QR Dinámico Noki App',
+          integrityHash: 'sha256-7841bc90124afe810c92'
+        }
+      };
+
+      const modalAudit = document.getElementById('modal-audit-detail');
+      const modalAuditContent = document.getElementById('modal-audit-content');
+
+      tbody.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-view-audit');
+        if (btn) {
+          const tr = btn.closest('tr');
+          const code = tr.getAttribute('data-code');
+          const item = auditDetails[code] || {
+            code: code,
+            timestamp: tr.querySelector('.text-xs')?.textContent || '24/09/2026',
+            event: tr.querySelectorAll('td')[1]?.textContent || 'Evento registrado',
+            point: tr.querySelectorAll('td')[2]?.textContent || 'Centro de Acopio',
+            actor: 'Sistema Noki Admin',
+            actorRole: 'Servicio Supabase RPC',
+            ipAddress: '127.0.0.1 (Internal Service)',
+            entity: 'academic_log',
+            status: tr.querySelector('.badge-directory')?.textContent || 'Completado',
+            declaredUnits: '1 unidad',
+            verificationMethod: 'Automático',
+            integrityHash: 'sha256-system-generated'
+          };
+
+          if (modalAuditContent) {
+            modalAuditContent.innerHTML = `
+              <div class="flex flex-col gap-4">
+                <div class="flex items-center justify-between p-3 rounded" style="background: #F3F4F6;">
+                  <div>
+                    <span class="text-xs text-muted block">Código del Evento</span>
+                    <strong class="text-base">${item.code}</strong>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted block">Estado Operativo</span>
+                    <span class="badge-directory badge-directory--completado">${item.status}</span>
+                  </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span class="text-xs text-muted block">Fecha y Hora (Bogotá)</span>
+                    <span class="fw-medium">${item.timestamp}</span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted block">Tipo de Evento</span>
+                    <span class="fw-medium">${item.event}</span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted block">Punto Académico</span>
+                    <span class="fw-medium">${item.point}</span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted block">Entidad Afectada</span>
+                    <code style="font-size: 0.75rem; background: #E5E7EB; padding: 2px 4px; border-radius: 4px;">${item.entity}</code>
+                  </div>
+                </div>
+
+                <div class="p-3 border rounded text-sm" style="border-color: #E5E7EB;">
+                  <span class="text-xs text-muted block mb-1">Actor Responsable de la Acción</span>
+                  <div class="fw-semibold text-dark">${item.actor}</div>
+                  <div class="text-xs text-muted">Rol: ${item.actorRole} • Dirección IP: ${item.ipAddress}</div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <span class="text-xs text-muted block">Unidades Implicadas</span>
+                    <span class="fw-medium">${item.declaredUnits}</span>
+                  </div>
+                  <div>
+                    <span class="text-xs text-muted block">Mecanismo de Verificación</span>
+                    <span class="fw-medium">${item.verificationMethod}</span>
+                  </div>
+                </div>
+
+                <div class="p-2 rounded text-xs" style="background: #E8F5E9; color: #1B5E20; font-family: monospace;">
+                  <i class="ph ph-lock-key" style="margin-right: 4px;"></i>
+                  <strong>Hash de Integridad (Inalterable):</strong> ${item.integrityHash}
+                </div>
+              </div>
+            `;
+          }
+
+          openModal(modalAudit);
+        }
+      });
+
+      // 5. Exportar Reporte a CSV (AF-16)
+      const exportHistoryBtn = document.getElementById('btn-export-history');
+      if (exportHistoryBtn) {
+        exportHistoryBtn.addEventListener('click', function () {
+          const visibleRows = rows.filter(r => r.style.display !== 'none');
+          if (visibleRows.length === 0) {
+            alert('No hay eventos visibles para exportar con los filtros actuales.');
+            return;
+          }
+
+          // AF-16: Código, Evento, Punto, Fecha, Estado
+          let csvContent = 'data:text/csv;charset=utf-8,Codigo,Fecha_Hora,Evento,Punto,Estado\n';
+          visibleRows.forEach(function (row) {
+            const code = row.querySelector('strong')?.textContent.trim() || '';
+            const date = row.querySelector('.text-xs')?.textContent.trim() || '';
+            const event = row.querySelectorAll('td')[1]?.textContent.trim() || '';
+            const point = row.querySelectorAll('td')[2]?.textContent.trim() || '';
+            const status = row.querySelector('.badge-directory')?.textContent.trim() || '';
+
+            // Neutralización de caracteres de fórmula y escape de comillas
+            const cleanCode = code.replace(/^[=+\-@]/, "'$&").replace(/"/g, '""');
+            const cleanDate = date.replace(/^[=+\-@]/, "'$&").replace(/"/g, '""');
+            const cleanEvent = event.replace(/^[=+\-@]/, "'$&").replace(/"/g, '""');
+            const cleanPoint = point.replace(/^[=+\-@]/, "'$&").replace(/"/g, '""');
+            const cleanStatus = status.replace(/^[=+\-@]/, "'$&").replace(/"/g, '""');
+
+            csvContent += `"${cleanCode}","${cleanDate}","${cleanEvent}","${cleanPoint}","${cleanStatus}"\n`;
+          });
+
+          const encodedUri = encodeURI(csvContent);
+          const link = document.createElement('a');
+          link.setAttribute('href', encodedUri);
+          link.setAttribute('download', `reporte-auditoria-historial-noki-${new Date().toISOString().slice(0, 10)}.csv`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>

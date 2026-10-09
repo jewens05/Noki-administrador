@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Noki Administración — Panel de administración y resumen operativo de entregas, jornadas y puntos de recolección de e-waste.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel de administración — Noki</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Logos/Flagicon.png">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Estilos compartidos -->
+  <link rel="stylesheet" href="estilos.css">
+  <!-- Módulo de accesibilidad -->
+  <script src="accesibilidad.js"></script>
+</head>
+
+<body>
+  <!-- ====================================================
+       LAYOUT MAESTRO COMPARTIDO (Sidebar + Topbar)
+       Vista: Resumen Operativo / Panel de Administración (AUI-02 / AF-03)
+       ==================================================== -->
+  <div class="app-layout">
+
+    <!-- --------------------------------------------------
+         SIDEBAR INSTITUCIONAL (Fijo a la izquierda)
+         -------------------------------------------------- -->
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal de navegación">
+      <!-- Marca NOKI -->
+      <div class="sidebar__brand">
+        <a href="resumen.html" aria-label="Ir al inicio del panel">
+          <img 
+            src="Logos/Logo sobre fondos oscuros.png" 
+            alt="Noki Administración" 
+            width="140" 
+            height="auto"
+          >
+        </a>
+      </div>
+
+      <!-- Navegación -->
+      <nav class="sidebar__nav">
+        <a href="resumen.html" class="sidebar__link sidebar__link--active" aria-current="page">
+          <i class="ph ph-squares-four" aria-hidden="true"></i>
+          <span>Inicio</span>
+        </a>
+
+        <a href="directorio.html" class="sidebar__link">
+          <i class="ph ph-buildings" aria-hidden="true"></i>
+          <span>Directorio</span>
+        </a>
+
+        <a href="operacion.html" class="sidebar__link">
+          <i class="ph ph-lightning" aria-hidden="true"></i>
+          <span>Receptores y horarios</span>
+        </a>
+
+        <a href="entregas.html" class="sidebar__link">
+          <i class="ph ph-truck" aria-hidden="true"></i>
+          <span>Supervisión de entrega</span>
+        </a>
+
+        <a href="reportes.html" class="sidebar__link">
+          <i class="ph ph-file-text" aria-hidden="true"></i>
+          <span>Reportes</span>
+        </a>
+
+        <a href="aprende.html" class="sidebar__link">
+          <i class="ph ph-book-open" aria-hidden="true"></i>
+          <span>Módulo Aprende</span>
+        </a>
+      </nav>
+
+      <!-- Isotipo / Ilustración institucional decorativa (inferior) -->
+      <div class="sidebar__decor" aria-hidden="true">
+        <img src="Iconos/Operación.png" alt="">
+      </div>
+    </aside>
+
+    <!-- Overlay oscuro para versión móvil -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- --------------------------------------------------
+         ÁREA PRINCIPAL DE CONTENIDO
+         -------------------------------------------------- -->
+    <div class="main-wrapper">
+
+      <!-- TOPBAR SUPERIOR (Sticky) -->
+      <header class="topbar" role="banner">
+        <div class="flex items-center gap-4">
+          <!-- Botón hamburguesa móvil -->
+          <button 
+            type="button" 
+            class="sidebar-toggle" 
+            id="sidebar-toggle" 
+            aria-label="Abrir menú lateral"
+            aria-expanded="false"
+          >
+            <i class="ph ph-list" aria-hidden="true"></i>
+          </button>
+
+          <!-- Título de la vista -->
+          <h1 class="topbar__title">Panel de administración</h1>
+        </div>
+
+        <!-- Acciones del Topbar -->
+        <div class="topbar__actions">
+          <!-- Controles de Accesibilidad (Usabilidad) -->
+          <div class="accessibility-controls" role="region" aria-label="Controles de accesibilidad">
+            <button type="button" class="accessibility-btn" id="btn-font-size" title="Aumentar tamaño de texto" aria-label="Aumentar tamaño de texto">
+              <span style="font-weight: 800; font-size: 1.1rem; line-height: 1;">A<sup style="font-size: 0.7rem; font-weight: 900;">+</sup></span>
+              <span class="accessibility-badge" id="font-size-badge">100%</span>
+            </button>
+            <button type="button" class="accessibility-btn" id="btn-theme-toggle" title="Cambiar contraste (Claro / Oscuro)" aria-label="Cambiar contraste">
+              <i class="ph ph-moon" id="theme-toggle-icon" style="font-size: 1.2rem;" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Notificaciones y Menú Desplegable -->
+          <div class="topbar__notifications-wrapper" style="position: relative;">
+            <button 
+              type="button" 
+              class="topbar__icon-btn" 
+              id="notifications-btn" 
+              aria-label="Notificaciones del sistema"
+              aria-expanded="false"
+              aria-haspopup="true"
+              title="Notificaciones"
+            >
+              <img src="Iconos/Iconos negros/Notificacion.png" alt="" width="22" height="22">
+              <span class="notification-dot" style="position: absolute; top: 6px; right: 6px; width: 9px; height: 9px; background: #DC2626; border-radius: 50%; border: 2px solid var(--white);"></span>
+            </button>
+
+            <!-- Menú desplegable de notificaciones -->
+            <div class="notifications-dropdown-menu" id="notifications-dropdown" role="menu" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); width: 340px; background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-xl); border: 1px solid var(--neutral-200); z-index: 1000; padding: 0; overflow: hidden;">
+              <div style="padding: 12px 16px; background: var(--noki-navy); color: #FFFFFF; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 700; font-size: 0.875rem;">Notificaciones</span>
+                <span class="notification-count-badge" style="font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">3 nuevas</span>
+              </div>
+              <div style="max-height: 280px; overflow-y: auto;">
+                <a href="entregas.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E8F5E9; color: #1B5E20; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-package" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Nueva entrega recibida</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Se acaba de recibir una nueva entrega (#E1093) en Centro de Acopio Manrique.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 5 minutos</span>
+                  </div>
+                </a>
+                <a href="operacion.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E3F2FD; color: #1565C0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-clock" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Horario actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">El punto UdeM habilitó franja de 06:00 AM - 08:00 PM.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 25 minutos</span>
+                  </div>
+                </a>
+                <a href="directorio.html" style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #FFF8E1; color: #F57F17; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-buildings" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Directorio actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Ficha de Centro Plaza Botero fue marcada en remodelación.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 1 hora</span>
+                  </div>
+                </a>
+              </div>
+              <div style="padding: 8px 16px; background: var(--neutral-50); border-top: 1px solid var(--neutral-100); text-align: center;">
+                <button type="button" id="btn-mark-notifications-read" style="font-size: 0.75rem; color: var(--noki-green-800); font-weight: 600; background: none; border: none; cursor: pointer;">
+                  Marcar todas como leídas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divisor vertical -->
+          <div class="topbar__divider" aria-hidden="true"></div>
+
+          <!-- Perfil de usuario y Dropdown -->
+          <div class="topbar__user-wrapper">
+            <button 
+              type="button" 
+              class="topbar__user" 
+              id="user-menu-btn" 
+              aria-expanded="false" 
+              aria-haspopup="true"
+            >
+              <div class="topbar__avatar" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Foto de perfil.png" alt="Foto de perfil">
+              </div>
+              <div class="topbar__user-info">
+                <span class="topbar__user-name" id="user-display-name">Jeffry Caro</span>
+                <span class="topbar__user-email" id="user-display-email" style="font-size: 0.7rem; color: var(--neutral-500); display: block; line-height: 1.2;">JCaro@Noki.co</span>
+                <span class="topbar__user-role" id="user-display-role">Administrador</span>
+              </div>
+              <span class="topbar__dropdown-btn" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Flecha abajo.png" width="16" height="16" alt="">
+              </span>
+            </button>
+
+            <!-- Menú desplegable de usuario -->
+            <div class="user-dropdown-menu" id="user-dropdown" role="menu">
+              <div class="user-dropdown-header">
+                <div class="fw-semibold text-sm" id="dropdown-user-name">Jeffry Caro</div>
+                <div class="text-xs" style="color: var(--neutral-500); margin-bottom: 2px;">
+                  Correo vinculado: <strong id="dropdown-user-email">JCaro@Noki.co</strong>
+                </div>
+                <div class="text-xs text-muted" id="dropdown-user-role">Rol: Administrador</div>
+              </div>
+
+
+              <button type="button" class="user-dropdown-item user-dropdown-item--danger" id="btn-logout" role="menuitem">
+                <i class="ph ph-sign-out"></i>
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- CONTENIDO DE LA PÁGINA (Resumen Operativo) -->
+      <main class="page-content" id="main-content">
+
+        <!-- ==============================================
+             FILA 1: TARJETAS DE ACCESO RÁPIDO A MÓDULOS
+             ============================================== -->
+        <section class="grid-4 mb-6" aria-label="Módulos de gestión">
+          <!-- Card 1: Gestión de directorio -->
+          <a href="directorio.html" class="quick-card">
+            <div class="quick-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Edificio.png" alt="">
+            </div>
+            <span class="quick-card__text">Gestión de directorio</span>
+          </a>
+
+          <!-- Card 2: Receptores y horarios -->
+          <a href="operacion.html" class="quick-card">
+            <div class="quick-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Operación.png" alt="">
+            </div>
+            <span class="quick-card__text">Receptores y horarios</span>
+          </a>
+
+          <!-- Card 3: Supervisión de entrega -->
+          <a href="entregas.html" class="quick-card">
+            <div class="quick-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Entrega.png" alt="">
+            </div>
+            <span class="quick-card__text">Supervisión de entrega</span>
+          </a>
+
+          <!-- Card 4: Reportes -->
+          <a href="reportes.html" class="quick-card">
+            <div class="quick-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Historial.png" alt="">
+            </div>
+            <span class="quick-card__text">Reportes</span>
+          </a>
+        </section>
+
+        <!-- ==============================================
+             FILA 2: INDICADORES CLAVE DE RENDIMIENTO (KPIs)
+             ============================================== -->
+        <section class="grid-4 mb-6" aria-label="Indicadores clave">
+          <!-- KPI 1: Toneladas / Entregas mes -->
+          <article class="kpi-card" role="region" aria-labelledby="kpi-label-1">
+            <div class="kpi-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Reciclaje2.png" alt="">
+            </div>
+            <div>
+              <div class="kpi-card__value" id="kpi-toneladas">2,15</div>
+              <div class="kpi-card__label" id="kpi-label-1">Toneladas recicladas este mes</div>
+            </div>
+          </article>
+
+          <!-- KPI 2: Usuarios registrados -->
+          <article class="kpi-card" role="region" aria-labelledby="kpi-label-2">
+            <div class="kpi-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Personas.png" alt="">
+            </div>
+            <div>
+              <div class="kpi-card__value" id="kpi-usuarios">4532</div>
+              <div class="kpi-card__label" id="kpi-label-2">Usuarios registrados</div>
+            </div>
+          </article>
+
+          <!-- KPI 3: Dispositivos reciclados acumulados -->
+          <article class="kpi-card" role="region" aria-labelledby="kpi-label-3">
+            <div class="kpi-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Dispositivos.png" alt="">
+            </div>
+            <div>
+              <div class="kpi-card__value" id="kpi-dispositivos">9852</div>
+              <div class="kpi-card__label" id="kpi-label-3">Dispositivos Reciclados</div>
+            </div>
+          </article>
+
+          <!-- KPI 4: Reciclados hoy -->
+          <article class="kpi-card" role="region" aria-labelledby="kpi-label-4">
+            <div class="kpi-card__icon" aria-hidden="true">
+              <img src="Iconos/Iconos negros/Historial.png" alt="">
+            </div>
+            <div>
+              <div class="kpi-card__value" id="kpi-hoy">43</div>
+              <div class="kpi-card__label" id="kpi-label-4">Dispositivos reciclados hoy</div>
+            </div>
+          </article>
+        </section>
+
+        <!-- ==============================================
+             FILA 3: VISUALIZACIONES Y GRÁFICOS (Fiel a Mockup Pantalla2)
+             ============================================== -->
+        <section class="dashboard-grid-charts mb-8" aria-label="Visualizaciones gráficas">
+
+          <!-- Gráfico Principal: Toneladas recicladas mensualmente -->
+          <article class="chart-card" role="region" aria-labelledby="chart-title-line">
+            <div class="chart-card__header">
+              <h2 class="chart-card__title" id="chart-title-line">Toneladas recicladas mensualmente</h2>
+              <div class="period-selector-wrapper" style="position: relative;">
+                <button type="button" class="chart-card__select" id="period-selector-btn" aria-expanded="false" aria-haspopup="true">
+                  <span id="period-selector-text">Últimos 9 meses</span>
+                  <i class="ph ph-caret-down" aria-hidden="true"></i>
+                </button>
+                <div class="period-dropdown-menu" id="period-dropdown-menu" style="display: none; position: absolute; right: 0; top: 100%; margin-top: 6px; background: var(--white); border: 1px solid var(--neutral-200); border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 50; width: 160px; padding: 4px 0;">
+                  <button type="button" class="period-option-btn" data-months="3" style="display: block; width: 100%; text-align: left; padding: 8px 16px; font-size: 0.8125rem; color: var(--neutral-800); background: none; border: none; cursor: pointer;">Últimos 3 meses</button>
+                  <button type="button" class="period-option-btn" data-months="6" style="display: block; width: 100%; text-align: left; padding: 8px 16px; font-size: 0.8125rem; color: var(--neutral-800); background: none; border: none; cursor: pointer;">Últimos 6 meses</button>
+                  <button type="button" class="period-option-btn" data-months="9" style="display: block; width: 100%; text-align: left; padding: 8px 16px; font-size: 0.8125rem; color: var(--neutral-800); background: none; border: none; cursor: pointer;">Últimos 9 meses</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Gráfico SVG Interactivo -->
+            <div class="chart-svg-container">
+              <svg 
+                class="chart-line-svg" 
+                viewBox="0 0 680 230" 
+                fill="none" 
+                xmlns="http://www.w3.org/2000/svg"
+                role="img"
+                aria-label="Gráfico de línea que muestra el incremento de toneladas recicladas de Enero a Septiembre"
+              >
+                <!-- Líneas de cuadrícula horizontal -->
+                <line x1="40" y1="30"  x2="650" y2="30"  stroke="#EEEEEE" stroke-width="1" />
+                <line x1="40" y1="65"  x2="650" y2="65"  stroke="#EEEEEE" stroke-width="1" />
+                <line x1="40" y1="100" x2="650" y2="100" stroke="#EEEEEE" stroke-width="1" />
+                <line x1="40" y1="135" x2="650" y2="135" stroke="#EEEEEE" stroke-width="1" />
+                <line x1="40" y1="170" x2="650" y2="170" stroke="#EEEEEE" stroke-width="1" />
+                <line x1="40" y1="205" x2="650" y2="205" stroke="#E0E0E0" stroke-width="1.5" />
+
+                <!-- Etiquetas eje Y -->
+                <text x="25" y="34"  font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">5</text>
+                <text x="25" y="69"  font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">4</text>
+                <text x="25" y="104" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">3</text>
+                <text x="25" y="139" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">2</text>
+                <text x="25" y="174" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">1</text>
+                <text x="25" y="209" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">0</text>
+
+                <!-- Línea de datos (Verde institucional #1B5E20) -->
+                <polyline
+                  fill="none"
+                  stroke="#1B5E20"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  points="65,175 135,155 205,132 275,148 345,128 415,115 485,126 555,102 625,80"
+                />
+
+                <!-- Puntos de datos circulares interactivos -->
+                <circle cx="65"  cy="175" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Ene: 0.9 toneladas</title></circle>
+                <circle cx="135" cy="155" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Feb: 1.4 toneladas</title></circle>
+                <circle cx="205" cy="132" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Mar: 2.1 toneladas</title></circle>
+                <circle cx="275" cy="148" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Abr: 1.6 toneladas</title></circle>
+                <circle cx="345" cy="128" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>May: 2.2 toneladas</title></circle>
+                <circle cx="415" cy="115" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Jun: 2.6 toneladas</title></circle>
+                <circle cx="485" cy="126" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Jul: 2.3 toneladas</title></circle>
+                <circle cx="555" cy="102" r="4.5" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Ago: 3.0 toneladas</title></circle>
+                <circle cx="625" cy="80"  r="5"   fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>Sep: 3.6 toneladas</title></circle>
+
+                <!-- Etiquetas eje X -->
+                <text x="65"  y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Ene</text>
+                <text x="135" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Feb</text>
+                <text x="205" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Mar</text>
+                <text x="275" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Abr</text>
+                <text x="345" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">May</text>
+                <text x="415" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Jun</text>
+                <text x="485" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Jul</text>
+                <text x="555" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Ago</text>
+                <text x="625" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">Sep</text>
+              </svg>
+            </div>
+
+            <!-- Leyenda inferior -->
+            <div class="chart-legend-center" aria-hidden="true">
+              <span class="chart-legend-dot"></span>
+              <span>Reciclados</span>
+            </div>
+          </article>
+
+          <!-- Gráfico Lateral: Dispositivos que se reciclan (Donut) -->
+          <article class="chart-card donut-widget" role="region" aria-labelledby="chart-title-donut">
+            <h2 class="chart-card__title text-center" id="chart-title-donut">Dispositivos que se reciclan</h2>
+
+            <!-- Donut SVG -->
+            <div class="donut-svg-wrapper">
+              <svg 
+                class="donut-svg" 
+                viewBox="0 0 42 42" 
+                role="img" 
+                aria-label="Gráfico circular de distribución: 60% Celulares, 20% Cargadores, 15% Otros, 10% Televisores"
+              >
+                <!-- Fondo del donut -->
+                <circle 
+                  cx="21" cy="21" r="15.91549430918954" 
+                  fill="transparent" 
+                  stroke="#EEEEEE" 
+                  stroke-width="7" 
+                />
+
+                <!-- Segmento 1: Celulares (60%) #60A5FA -->
+                <circle 
+                  cx="21" cy="21" r="15.91549430918954" 
+                  fill="transparent" 
+                  stroke="#60A5FA" 
+                  stroke-width="7" 
+                  stroke-dasharray="60 40" 
+                  stroke-dashoffset="0" 
+                />
+
+                <!-- Segmento 2: Cargadores móviles (20%) #1E3A5F -->
+                <circle 
+                  cx="21" cy="21" r="15.91549430918954" 
+                  fill="transparent" 
+                  stroke="#1E3A5F" 
+                  stroke-width="7" 
+                  stroke-dasharray="20 80" 
+                  stroke-dashoffset="-60" 
+                />
+
+                <!-- Segmento 3: Otros dispositivos (15%) #D81B60 -->
+                <circle 
+                  cx="21" cy="21" r="15.91549430918954" 
+                  fill="transparent" 
+                  stroke="#D81B60" 
+                  stroke-width="7" 
+                  stroke-dasharray="15 85" 
+                  stroke-dashoffset="-80" 
+                />
+
+                <!-- Segmento 4: Televisores (10% normalizado) #4DB6AC -->
+                <circle 
+                  cx="21" cy="21" r="15.91549430918954" 
+                  fill="transparent" 
+                  stroke="#4DB6AC" 
+                  stroke-width="7" 
+                  stroke-dasharray="10 90" 
+                  stroke-dashoffset="-95" 
+                />
+              </svg>
+            </div>
+
+            <!-- Leyenda de colores -->
+            <ul class="donut-legend-list">
+              <li class="donut-legend-item">
+                <span class="donut-legend-color" style="background: #1E3A5F;" aria-hidden="true"></span>
+                <span>(20%) Cargadores móviles</span>
+              </li>
+              <li class="donut-legend-item">
+                <span class="donut-legend-color" style="background: #60A5FA;" aria-hidden="true"></span>
+                <span>(60%) Celulares</span>
+              </li>
+              <li class="donut-legend-item">
+                <span class="donut-legend-color" style="background: #4DB6AC;" aria-hidden="true"></span>
+                <span>(10%) Televisores</span>
+              </li>
+              <li class="donut-legend-item">
+                <span class="donut-legend-color" style="background: #D81B60;" aria-hidden="true"></span>
+                <span>(15%) Otros dispositivos</span>
+              </li>
+            </ul>
+          </article>
+
+        </section>
+
+
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ====================================================
+       JAVASCRIPT — Lógica y Control de la Vista Resumen
+       ==================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. Control de Autenticación de Sesión (AF-01)
+      const role = sessionStorage.getItem('noki-admin-role') || 'administrador';
+      const userName = sessionStorage.getItem('noki-admin-name') || 'Jeffry Caro';
+      const userEmail = sessionStorage.getItem('noki-admin-email') || 'JCaro@Noki.co';
+
+      // En producción activa:
+      // if (!sessionStorage.getItem('noki-admin-role')) {
+      //   window.location.href = 'index.html';
+      // }
+
+      // Actualizar datos del usuario en la interfaz
+      const userDisplayName = document.getElementById('user-display-name');
+      const userDisplayRole = document.getElementById('user-display-role');
+      const dropdownUserName = document.getElementById('dropdown-user-name');
+      const dropdownUserRole = document.getElementById('dropdown-user-role');
+
+      if (userDisplayName) userDisplayName.textContent = userName;
+      if (userDisplayRole) userDisplayRole.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+      if (dropdownUserName) dropdownUserName.textContent = userName;
+      const dropdownUserEmail = document.getElementById('dropdown-user-email');
+      if (dropdownUserEmail) dropdownUserEmail.textContent = userEmail;
+      const userDisplayEmail = document.getElementById('user-display-email');
+      if (userDisplayEmail) userDisplayEmail.textContent = userEmail;
+      if (dropdownUserRole) dropdownUserRole.textContent = 'Rol: ' + (role.charAt(0).toUpperCase() + role.slice(1));
+
+      // 2. Toggle del Menú de Usuario (Dropdown)
+      const userBtn = document.getElementById('user-menu-btn');
+      const userDropdown = document.getElementById('user-dropdown');
+
+      if (userBtn && userDropdown) {
+        userBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const isActive = userDropdown.classList.contains('active');
+          userDropdown.classList.toggle('active', !isActive);
+          userBtn.setAttribute('aria-expanded', !isActive);
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+            userDropdown.classList.remove('active');
+            userBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      // 3. Logout (Cierre de Sesión Seguro - AF-01)
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          sessionStorage.removeItem('noki-admin-role');
+          sessionStorage.removeItem('noki-admin-user');
+          sessionStorage.removeItem('noki-admin-name');
+          sessionStorage.removeItem('noki-admin-email');
+          window.location.href = 'index.html';
+        });
+      }
+
+      // 4. Toggle del Sidebar Móvil
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+      }
+
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+          if (sidebar && sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        });
+      }
+
+      if (overlay) {
+        overlay.addEventListener('click', closeSidebar);
+      }
+
+      // 5. Botón de Actualizar / Recargar datos (AF-03)
+      const refreshBtn = document.getElementById('btn-refresh');
+      const refreshIcon = document.getElementById('refresh-icon');
+      const syncTimestamp = document.getElementById('sync-timestamp');
+
+      if (refreshBtn && refreshIcon) {
+        refreshBtn.addEventListener('click', function () {
+          refreshIcon.classList.add('ph-spin');
+          refreshBtn.disabled = true;
+
+          setTimeout(function () {
+            refreshIcon.classList.remove('ph-spin');
+            refreshBtn.disabled = false;
+
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            if (syncTimestamp) {
+              syncTimestamp.textContent = `Última consulta: Hoy, ${hours}:${minutes} (Hora de Colombia)`;
+            }
+          }, 800);
+        });
+      }
+
+      // 6. Selector de punto académico (Simulación de filtro)
+      const puntoFilter = document.getElementById('filter-punto');
+      if (puntoFilter) {
+        puntoFilter.addEventListener('change', function () {
+          if (refreshBtn) refreshBtn.click();
+        });
+      }
+
+      // 7. Control de Período para Gráfica de Toneladas Recicladas (3, 6 y 9 meses)
+      const periodBtn = document.getElementById('period-selector-btn');
+      const periodText = document.getElementById('period-selector-text');
+      const periodMenu = document.getElementById('period-dropdown-menu');
+      const periodOptions = document.querySelectorAll('.period-option-btn');
+
+      const chartSvgContainer = document.querySelector('.chart-svg-container');
+
+      const dataset = [
+        { month: 'Ene', tons: 0.9, y: 175 },
+        { month: 'Feb', tons: 1.4, y: 155 },
+        { month: 'Mar', tons: 2.1, y: 132 },
+        { month: 'Abr', tons: 1.6, y: 148 },
+        { month: 'May', tons: 2.2, y: 128 },
+        { month: 'Jun', tons: 2.6, y: 115 },
+        { month: 'Jul', tons: 2.3, y: 126 },
+        { month: 'Ago', tons: 3.0, y: 102 },
+        { month: 'Sep', tons: 3.6, y: 80 }
+      ];
+
+      function updateChart(monthsCount) {
+        const sliceData = dataset.slice(-monthsCount);
+        const svg = chartSvgContainer ? chartSvgContainer.querySelector('svg') : null;
+        if (!svg) return;
+
+        const startX = 65;
+        const endX = 625;
+        const step = sliceData.length > 1 ? (endX - startX) / (sliceData.length - 1) : 0;
+
+        let points = [];
+        let circlesHtml = '';
+        let labelsHtml = '';
+
+        sliceData.forEach((item, index) => {
+          const x = Math.round(startX + index * step);
+          points.push(`${x},${item.y}`);
+
+          const r = (index === sliceData.length - 1) ? 5 : 4.5;
+          circlesHtml += `<circle cx="${x}" cy="${item.y}" r="${r}" fill="#1B5E20" stroke="#FFFFFF" stroke-width="2"><title>${item.month}: ${item.tons} toneladas</title></circle>`;
+          labelsHtml += `<text x="${x}" y="225" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="middle">${item.month}</text>`;
+        });
+
+        svg.innerHTML = `
+          <!-- Líneas de cuadrícula horizontal -->
+          <line x1="40" y1="30"  x2="650" y2="30"  stroke="#EEEEEE" stroke-width="1" />
+          <line x1="40" y1="65"  x2="650" y2="65"  stroke="#EEEEEE" stroke-width="1" />
+          <line x1="40" y1="100" x2="650" y2="100" stroke="#EEEEEE" stroke-width="1" />
+          <line x1="40" y1="135" x2="650" y2="135" stroke="#EEEEEE" stroke-width="1" />
+          <line x1="40" y1="170" x2="650" y2="170" stroke="#EEEEEE" stroke-width="1" />
+          <line x1="40" y1="205" x2="650" y2="205" stroke="#E0E0E0" stroke-width="1.5" />
+
+          <!-- Etiquetas eje Y -->
+          <text x="25" y="34"  font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">5</text>
+          <text x="25" y="69"  font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">4</text>
+          <text x="25" y="104" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">3</text>
+          <text x="25" y="139" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">2</text>
+          <text x="25" y="174" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">1</text>
+          <text x="25" y="209" font-size="12" fill="#737373" font-family="Inter, sans-serif" text-anchor="end">0</text>
+
+          <!-- Línea de datos (Verde institucional #1B5E20) -->
+          <polyline
+            fill="none"
+            stroke="#1B5E20"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            points="${points.join(' ')}"
+          />
+
+          <!-- Puntos de datos circulares -->
+          ${circlesHtml}
+
+          <!-- Etiquetas eje X -->
+          ${labelsHtml}
+        `;
+
+        const chartTitleLabel = document.getElementById('chart-title-line');
+        if (chartTitleLabel) {
+          chartTitleLabel.setAttribute('aria-label', `Toneladas recicladas mensualmente (${monthsCount} meses)`);
+        }
+      }
+
+      if (periodBtn && periodMenu) {
+        periodBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const isVisible = periodMenu.style.display === 'block';
+          periodMenu.style.display = isVisible ? 'none' : 'block';
+          periodBtn.setAttribute('aria-expanded', !isVisible);
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!periodBtn.contains(e.target) && !periodMenu.contains(e.target)) {
+            periodMenu.style.display = 'none';
+            periodBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        periodOptions.forEach(opt => {
+          opt.addEventListener('click', function () {
+            const months = parseInt(opt.getAttribute('data-months'), 10);
+            if (periodText) periodText.textContent = `Últimos ${months} meses`;
+            updateChart(months);
+            periodMenu.style.display = 'none';
+            periodBtn.setAttribute('aria-expanded', 'false');
+          });
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>

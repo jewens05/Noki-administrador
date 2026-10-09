@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Noki Administración — Gestión de directorio: administra, revisa, archiva y publica las fichas informativas de la red.">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Gestión de directorio — Noki</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="Logos/Flagicon.png">
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+
+  <!-- Estilos compartidos -->
+  <link rel="stylesheet" href="estilos.css">
+  <!-- Módulo de accesibilidad -->
+  <script src="accesibilidad.js"></script>
+</head>
+
+<body>
+  <!-- ====================================================
+       LAYOUT MAESTRO COMPARTIDO (Sidebar + Topbar)
+       Vista: Gestión de Directorio (Pantalla 3 / AF-04 a AF-07)
+       ==================================================== -->
+  <div class="app-layout">
+
+    <!-- --------------------------------------------------
+         SIDEBAR INSTITUCIONAL (Fijo a la izquierda)
+         -------------------------------------------------- -->
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal de navegación">
+      <!-- Marca NOKI -->
+      <div class="sidebar__brand">
+        <a href="resumen.html" aria-label="Ir al inicio del panel">
+          <img 
+            src="Logos/Logo sobre fondos oscuros.png" 
+            alt="Noki Administración" 
+            width="140" 
+            height="auto"
+          >
+        </a>
+      </div>
+
+      <!-- Navegación -->
+      <nav class="sidebar__nav">
+        <a href="resumen.html" class="sidebar__link">
+          <i class="ph ph-squares-four" aria-hidden="true"></i>
+          <span>Inicio</span>
+        </a>
+
+        <!-- Directorio ACTIVO -->
+        <a href="directorio.html" class="sidebar__link sidebar__link--active" aria-current="page">
+          <i class="ph ph-buildings" aria-hidden="true"></i>
+          <span>Directorio</span>
+        </a>
+
+        <a href="operacion.html" class="sidebar__link">
+          <i class="ph ph-lightning" aria-hidden="true"></i>
+          <span>Receptores y horarios</span>
+        </a>
+
+        <a href="entregas.html" class="sidebar__link">
+          <i class="ph ph-truck" aria-hidden="true"></i>
+          <span>Supervisión de entrega</span>
+        </a>
+
+        <a href="reportes.html" class="sidebar__link">
+          <i class="ph ph-file-text" aria-hidden="true"></i>
+          <span>Reportes</span>
+        </a>
+
+        <a href="aprende.html" class="sidebar__link">
+          <i class="ph ph-book-open" aria-hidden="true"></i>
+          <span>Módulo Aprende</span>
+        </a>
+      </nav>
+
+      <!-- Isotipo / Ilustración institucional decorativa (inferior) -->
+      <div class="sidebar__decor" aria-hidden="true">
+        <img src="Iconos/Operación.png" alt="">
+      </div>
+    </aside>
+
+    <!-- Overlay oscuro para versión móvil -->
+    <div class="sidebar-overlay" id="sidebar-overlay" aria-hidden="true"></div>
+
+    <!-- --------------------------------------------------
+         ÁREA PRINCIPAL DE CONTENIDO
+         -------------------------------------------------- -->
+    <div class="main-wrapper">
+
+      <!-- TOPBAR SUPERIOR (Sticky) -->
+      <header class="topbar" role="banner">
+        <div class="flex items-center gap-4">
+          <!-- Botón hamburguesa móvil -->
+          <button 
+            type="button" 
+            class="sidebar-toggle" 
+            id="sidebar-toggle" 
+            aria-label="Abrir menú lateral"
+            aria-expanded="false"
+          >
+            <i class="ph ph-list" aria-hidden="true"></i>
+          </button>
+
+          <!-- Título de la vista -->
+          <span class="topbar__title">Panel de administración</span>
+        </div>
+
+        <!-- Acciones del Topbar -->
+        <div class="topbar__actions">
+          <!-- Controles de Accesibilidad (Usabilidad) -->
+          <div class="accessibility-controls" role="region" aria-label="Controles de accesibilidad">
+            <button type="button" class="accessibility-btn" id="btn-font-size" title="Aumentar tamaño de texto" aria-label="Aumentar tamaño de texto">
+              <span style="font-weight: 800; font-size: 1.1rem; line-height: 1;">A<sup style="font-size: 0.7rem; font-weight: 900;">+</sup></span>
+              <span class="accessibility-badge" id="font-size-badge">100%</span>
+            </button>
+            <button type="button" class="accessibility-btn" id="btn-theme-toggle" title="Cambiar contraste (Claro / Oscuro)" aria-label="Cambiar contraste">
+              <i class="ph ph-moon" id="theme-toggle-icon" style="font-size: 1.2rem;" aria-hidden="true"></i>
+            </button>
+          </div>
+
+          <!-- Notificaciones y Menú Desplegable -->
+          <div class="topbar__notifications-wrapper" style="position: relative;">
+            <button 
+              type="button" 
+              class="topbar__icon-btn" 
+              id="notifications-btn" 
+              aria-label="Notificaciones del sistema"
+              aria-expanded="false"
+              aria-haspopup="true"
+              title="Notificaciones"
+            >
+              <img src="Iconos/Iconos negros/Notificacion.png" alt="" width="22" height="22">
+              <span class="notification-dot" style="position: absolute; top: 6px; right: 6px; width: 9px; height: 9px; background: #DC2626; border-radius: 50%; border: 2px solid var(--white);"></span>
+            </button>
+
+            <!-- Menú desplegable de notificaciones -->
+            <div class="notifications-dropdown-menu" id="notifications-dropdown" role="menu" style="display: none; position: absolute; right: 0; top: calc(100% + 10px); width: 340px; background: var(--white); border-radius: var(--radius-md); box-shadow: var(--shadow-xl); border: 1px solid var(--neutral-200); z-index: 1000; padding: 0; overflow: hidden;">
+              <div style="padding: 12px 16px; background: var(--noki-navy); color: #FFFFFF; display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-weight: 700; font-size: 0.875rem;">Notificaciones</span>
+                <span class="notification-count-badge" style="font-size: 0.75rem; background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px;">3 nuevas</span>
+              </div>
+              <div style="max-height: 280px; overflow-y: auto;">
+                <a href="entregas.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E8F5E9; color: #1B5E20; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-package" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Nueva entrega recibida</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Se acaba de recibir una nueva entrega (#E1093) en Centro de Acopio Manrique.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 5 minutos</span>
+                  </div>
+                </a>
+                <a href="operacion.html" style="display: flex; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--neutral-100); text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #E3F2FD; color: #1565C0; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-clock" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Horario actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">El punto UdeM habilitó franja de 06:00 AM - 08:00 PM.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 25 minutos</span>
+                  </div>
+                </a>
+                <a href="directorio.html" style="display: flex; gap: 12px; padding: 12px 16px; text-decoration: none; color: inherit; transition: background 0.15s;" class="notification-item">
+                  <div style="width: 34px; height: 34px; border-radius: 50%; background: #FFF8E1; color: #F57F17; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                    <i class="ph ph-buildings" style="font-size: 1.1rem;"></i>
+                  </div>
+                  <div>
+                    <p style="font-size: 0.8125rem; font-weight: 600; margin-bottom: 2px; color: var(--neutral-900);">Directorio actualizado</p>
+                    <p style="font-size: 0.75rem; color: var(--neutral-600); margin-bottom: 4px;">Ficha de Centro Plaza Botero fue marcada en remodelación.</p>
+                    <span style="font-size: 0.7rem; color: var(--neutral-400);">Hace 1 hora</span>
+                  </div>
+                </a>
+              </div>
+              <div style="padding: 8px 16px; background: var(--neutral-50); border-top: 1px solid var(--neutral-100); text-align: center;">
+                <button type="button" id="btn-mark-notifications-read" style="font-size: 0.75rem; color: var(--noki-green-800); font-weight: 600; background: none; border: none; cursor: pointer;">
+                  Marcar todas como leídas
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divisor vertical -->
+          <div class="topbar__divider" aria-hidden="true"></div>
+
+          <!-- Perfil de usuario y Dropdown -->
+          <div class="topbar__user-wrapper">
+            <button 
+              type="button" 
+              class="topbar__user" 
+              id="user-menu-btn" 
+              aria-expanded="false" 
+              aria-haspopup="true"
+            >
+              <div class="topbar__avatar" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Foto de perfil.png" alt="Foto de perfil">
+              </div>
+              <div class="topbar__user-info">
+                <span class="topbar__user-name" id="user-display-name">Jeffry Caro</span>
+                <span class="topbar__user-email" id="user-display-email" style="font-size: 0.7rem; color: var(--neutral-500); display: block; line-height: 1.2;">JCaro@Noki.co</span>
+                <span class="topbar__user-role" id="user-display-role">Administrador</span>
+              </div>
+              <span class="topbar__dropdown-btn" aria-hidden="true">
+                <img src="Iconos/Iconos negros/Flecha abajo.png" width="16" height="16" alt="">
+              </span>
+            </button>
+
+            <!-- Menú desplegable de usuario -->
+            <div class="user-dropdown-menu" id="user-dropdown" role="menu">
+              <div class="user-dropdown-header">
+                <div class="fw-semibold text-sm" id="dropdown-user-name">Jeffry Caro</div>
+                <div class="text-xs" style="color: var(--neutral-500); margin-bottom: 2px;">
+                  Correo vinculado: <strong id="dropdown-user-email">JCaro@Noki.co</strong>
+                </div>
+                <div class="text-xs text-muted" id="dropdown-user-role">Rol: Administrador</div>
+              </div>
+
+
+              <button type="button" class="user-dropdown-item user-dropdown-item--danger" id="btn-logout" role="menuitem">
+                <i class="ph ph-sign-out"></i>
+                <span>Cerrar sesión</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </header>
+
+      <!-- CONTENIDO DE LA PÁGINA (Gestión de Directorio) -->
+      <main class="page-content" id="main-content">
+
+        <!-- ==============================================
+             ENCABEZADO DE VISTA (Título + Botón Crear)
+             ============================================== -->
+        <div class="page-title-group">
+          <div>
+            <h1 class="page-title">Gestión de directorio</h1>
+            <p class="page-subtitle">Administra revisa, archiva y publica las fichas informativas de la red</p>
+          </div>
+
+          <!-- Botón Crear Nuevo Directorio (Mockup Pantalla 3) -->
+          <button type="button" class="btn btn--navy" id="btn-open-create-modal">
+            <span>Crear nuevo directorio</span>
+            <i class="ph ph-plus" style="margin-left: 6px;" aria-hidden="true"></i>
+          </button>
+        </div>
+
+        <!-- ==============================================
+             BARRA DE BÚSQUEDA Y FILTROS POR ESTADO (AF-04)
+             ============================================== -->
+        <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+          <!-- Input de búsqueda -->
+          <div class="search-pill-wrapper" style="margin-bottom: 0;">
+            <i class="ph ph-magnifying-glass search-pill-icon" aria-hidden="true"></i>
+            <label for="search-directory-input" class="sr-only">Buscar lugar o categoría</label>
+            <input 
+              type="search" 
+              class="search-pill-input" 
+              id="search-directory-input" 
+              placeholder="Buscar por nombre de lugar, barrio o dirección..."
+              autocomplete="off"
+            >
+          </div>
+
+          <!-- Filtros rápidos por estado -->
+          <div class="flex items-center gap-2" role="group" aria-label="Filtrar por estado">
+            <button type="button" class="btn btn--secondary btn--sm filter-status-btn active" data-filter="todos">
+              Todos (7)
+            </button>
+            <button type="button" class="btn btn--ghost btn--sm filter-status-btn" data-filter="funcional">
+              Funcional (5)
+            </button>
+            <button type="button" class="btn btn--ghost btn--sm filter-status-btn" data-filter="remodelacion">
+              Remodelación (1)
+            </button>
+            <button type="button" class="btn btn--ghost btn--sm filter-status-btn" data-filter="inoperativo">
+              Inoperativo (1)
+            </button>
+          </div>
+        </div>
+
+        <!-- ==============================================
+             TABLA DE DIRECTORIO (Fiel a Mockup Pantalla 3)
+             ============================================== -->
+        <div class="directory-card" role="region" aria-labelledby="directory-table-label">
+          <h2 id="directory-table-label" class="sr-only">Listado de fichas de directorio de puntos de recolección</h2>
+          <table class="directory-table" id="directory-table">
+            <thead>
+              <tr>
+                <th scope="col" style="width: 32%;">Lugar</th>
+                <th scope="col" style="width: 36%;">Categoría</th>
+                <th scope="col" style="width: 16%;">Estado</th>
+                <th scope="col" style="width: 16%; text-align: center;">Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="directory-tbody">
+              <!-- Fila 1: Manrique -->
+              <tr data-status="funcional" data-id="dir-1">
+                <td>
+                  <strong>Centro de Acopio Manrique</strong>
+                </td>
+                <td>Cra. 45 # 71-32, Manrique</td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group" style="justify-content: center;">
+                    <button type="button" class="btn-icon-action btn-edit" title="Editar ficha" aria-label="Editar Centro de Acopio Manrique">
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-view" title="Ver detalle" aria-label="Ver Centro de Acopio Manrique">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-icon-action--danger btn-archive" title="Archivar o inhabilitar" aria-label="Archivar Centro de Acopio Manrique">
+                      <i class="ph ph-x-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 2: Plaza Botero -->
+              <tr data-status="remodelacion" data-id="dir-2">
+                <td>
+                  <strong>Centro de Acopio Plaza Botero</strong>
+                </td>
+                <td>Cra. 52 # 52-18, La Candelaria</td>
+                <td>
+                  <span class="badge-directory badge-directory--remodelacion">Remodelación</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group" style="justify-content: center;">
+                    <button type="button" class="btn-icon-action btn-edit" title="Editar ficha" aria-label="Editar Centro de Acopio Plaza Botero">
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-view" title="Ver detalle" aria-label="Ver Centro de Acopio Plaza Botero">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-icon-action--danger btn-archive" title="Archivar o inhabilitar" aria-label="Archivar Centro de Acopio Plaza Botero">
+                      <i class="ph ph-x-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 3: Moravia -->
+              <tr data-status="funcional" data-id="dir-3">
+                <td>
+                  <strong>Centro de Acopio Moravia</strong>
+                </td>
+                <td>Cra. 54 # 78-45, Moravia</td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group" style="justify-content: center;">
+                    <button type="button" class="btn-icon-action btn-edit" title="Editar ficha" aria-label="Editar Centro de Acopio Moravia">
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-view" title="Ver detalle" aria-label="Ver Centro de Acopio Moravia">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-icon-action--danger btn-archive" title="Archivar o inhabilitar" aria-label="Archivar Centro de Acopio Moravia">
+                      <i class="ph ph-x-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 4: UdeM -->
+              <tr data-status="funcional" data-id="dir-4">
+                <td>
+                  <strong>Centro de Acopio UdeM</strong>
+                </td>
+                <td>Cra. 87 # 30-65, Belén</td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group" style="justify-content: center;">
+                    <button type="button" class="btn-icon-action btn-edit" title="Editar ficha" aria-label="Editar Centro de Acopio UdeM">
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-view" title="Ver detalle" aria-label="Ver Centro de Acopio UdeM">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-icon-action--danger btn-archive" title="Archivar o inhabilitar" aria-label="Archivar Centro de Acopio UdeM">
+                      <i class="ph ph-x-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 5: Terminal del sur -->
+              <tr data-status="inoperativo" data-id="dir-5">
+                <td>
+                  <strong>Centro de Acopio Terminal del sur</strong>
+                </td>
+                <td>Cra. 65 # 10-45, Guayabal</td>
+                <td>
+                  <span class="badge-directory badge-directory--inoperativo">Inoperativo</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group" style="justify-content: center;">
+                    <button type="button" class="btn-icon-action btn-edit" title="Editar ficha" aria-label="Editar Centro de Acopio Terminal del sur">
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-view" title="Ver detalle" aria-label="Ver Centro de Acopio Terminal del sur">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-icon-action--danger btn-archive" title="Archivar o inhabilitar" aria-label="Archivar Centro de Acopio Terminal del sur">
+                      <i class="ph ph-x-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 6: Guayabal -->
+              <tr data-status="funcional" data-id="dir-6">
+                <td>
+                  <strong>Centro de Acopio Guayabal</strong>
+                </td>
+                <td>Cra. 52 # 14-28, Guayabal</td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group" style="justify-content: center;">
+                    <button type="button" class="btn-icon-action btn-edit" title="Editar ficha" aria-label="Editar Centro de Acopio Guayabal">
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-view" title="Ver detalle" aria-label="Ver Centro de Acopio Guayabal">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-icon-action--danger btn-archive" title="Archivar o inhabilitar" aria-label="Archivar Centro de Acopio Guayabal">
+                      <i class="ph ph-x-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Fila 7: Doce de Octubre -->
+              <tr data-status="funcional" data-id="dir-7">
+                <td>
+                  <strong>Centro de Acopio Doce de Octubre</strong>
+                </td>
+                <td>Cra. 80 # 103-16, Doce de Octubre</td>
+                <td>
+                  <span class="badge-directory badge-directory--funcional">Funcional</span>
+                </td>
+                <td>
+                  <div class="action-buttons-group" style="justify-content: center;">
+                    <button type="button" class="btn-icon-action btn-edit" title="Editar ficha" aria-label="Editar Centro de Acopio Doce de Octubre">
+                      <i class="ph ph-pencil-simple" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-view" title="Ver detalle" aria-label="Ver Centro de Acopio Doce de Octubre">
+                      <i class="ph ph-eye" aria-hidden="true"></i>
+                    </button>
+                    <button type="button" class="btn-icon-action btn-icon-action--danger btn-archive" title="Archivar o inhabilitar" aria-label="Archivar Centro de Acopio Doce de Octubre">
+                      <i class="ph ph-x-circle" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ====================================================
+       MODALES ACCESIBLES (AF-05, AF-06, AF-07)
+       ==================================================== -->
+
+  <!-- 1. Modal: Crear / Editar Ficha (AF-05 / AF-06) -->
+  <div class="modal-backdrop" id="modal-form-directory" role="dialog" aria-modal="true" aria-labelledby="modal-form-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-form-title">Nueva Ficha de Directorio</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-form-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+
+      <form id="form-directory" novalidate>
+        <div class="modal-body">
+          <!-- Nombre del lugar -->
+          <div class="form-group">
+            <label for="dir-name" class="form-label">Nombre del lugar *</label>
+            <input type="text" id="dir-name" class="form-input" placeholder="Ej. Centro de Acopio Belén" required>
+          </div>
+
+          <!-- Dirección y Barrio -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="dir-address" class="form-label">Dirección física *</label>
+              <input type="text" id="dir-address" class="form-input" placeholder="Ej. Calle 30 # 76-45" required>
+            </div>
+            <div class="form-group">
+              <label for="dir-neighborhood" class="form-label">Barrio / Comuna *</label>
+              <input type="text" id="dir-neighborhood" class="form-input" placeholder="Ej. Belén, Comuna 16" required>
+            </div>
+          </div>
+
+          <!-- Horario y Teléfono -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="dir-schedule" class="form-label">Horario de atención</label>
+              <input type="text" id="dir-schedule" class="form-input" placeholder="Ej. Lun - Vie: 8:00 AM - 5:00 PM">
+            </div>
+            <div class="form-group">
+              <label for="dir-phone" class="form-label">Teléfono de contacto</label>
+              <input type="tel" id="dir-phone" class="form-input" placeholder="Ej. (604) 444 00 00">
+            </div>
+          </div>
+
+          <!-- Tipos de Residuos -->
+          <div class="form-group">
+            <label for="dir-waste-types" class="form-label">Tipos de residuos aceptados (e-waste)</label>
+            <input type="text" id="dir-waste-types" class="form-input" placeholder="Celulares, cargadores, baterías, periféricos">
+          </div>
+
+          <!-- Fuente HTTPS y Fecha de Revisión (AF-06) -->
+          <div class="grid-2">
+            <div class="form-group">
+              <label for="dir-source" class="form-label">Fuente oficial (HTTPS) *</label>
+              <input type="url" id="dir-source" class="form-input" placeholder="https://medellin.gov.co/puntos" required>
+            </div>
+            <div class="form-group">
+              <label for="dir-review-date" class="form-label">Fecha de revisión editorial *</label>
+              <input type="date" id="dir-review-date" class="form-input" required>
+            </div>
+          </div>
+
+          <!-- Estado inicial -->
+          <div class="form-group">
+            <label for="dir-status" class="form-label">Estado de la ficha</label>
+            <select id="dir-status" class="form-select">
+              <option value="funcional">Funcional (Publicado)</option>
+              <option value="remodelacion">Remodelación (Borrador)</option>
+              <option value="inoperativo">Inoperativo (Archivado)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn--secondary" id="btn-save-draft">
+            Guardar como borrador
+          </button>
+          <button type="submit" class="btn btn--primary" id="btn-save-publish">
+            Publicar ficha
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. Modal: Detalle de Ficha (Ver) -->
+  <div class="modal-backdrop" id="modal-view-directory" role="dialog" aria-modal="true" aria-labelledby="modal-view-title">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modal-view-title">Detalle de la Ficha</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-view-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <div class="modal-body" id="modal-view-content">
+        <!-- Rellenado dinámicamente con JavaScript -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn--secondary" id="btn-close-view-footer">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Modal: Archivar Ficha (AF-07 con motivo obligatorio) -->
+  <div class="modal-backdrop" id="modal-archive-directory" role="dialog" aria-modal="true" aria-labelledby="modal-archive-title">
+    <div class="modal-dialog" style="max-width: 500px;">
+      <div class="modal-header">
+        <h2 class="modal-title text-danger" id="modal-archive-title">Archivar ficha del directorio</h2>
+        <button type="button" class="modal-close-btn" id="btn-close-archive-modal" aria-label="Cerrar modal">
+          <i class="ph ph-x"></i>
+        </button>
+      </div>
+      <form id="form-archive" novalidate>
+        <div class="modal-body">
+          <p class="text-sm text-muted">
+            Estás a punto de archivar la ficha: <strong id="archive-place-name">Centro de Acopio</strong>. 
+            Esta ficha dejará de mostrarse en Noki App al sincronizar, pero conservará su trazabilidad histórica (AF-07).
+          </p>
+          <div class="form-group mt-4">
+            <label for="archive-reason" class="form-label">Motivo de archivo (10 - 500 caracteres) *</label>
+            <textarea 
+              id="archive-reason" 
+              class="form-textarea" 
+              rows="3" 
+              placeholder="Indica la razón por la cual se inhabilita o archiva el punto de recolección..."
+              minlength="10"
+              maxlength="500"
+              required
+            ></textarea>
+            <span class="text-xs text-muted" id="archive-char-count">0 / 500 caracteres</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn--secondary" id="btn-cancel-archive">
+            Cancelar
+          </button>
+          <button type="submit" class="btn btn--danger" id="btn-confirm-archive">
+            Confirmar archivo
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ====================================================
+       JAVASCRIPT — Lógica y Control de Directorio
+       ==================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // 1. Control de Sesión y Datos de Usuario
+      const role = sessionStorage.getItem('noki-admin-role') || 'administrador';
+      const userName = sessionStorage.getItem('noki-admin-name') || 'Jeffry Caro';
+      const userEmail = sessionStorage.getItem('noki-admin-email') || 'JCaro@Noki.co';
+
+      const userDisplayName = document.getElementById('user-display-name');
+      const userDisplayRole = document.getElementById('user-display-role');
+      const dropdownUserName = document.getElementById('dropdown-user-name');
+      const dropdownUserRole = document.getElementById('dropdown-user-role');
+
+      if (userDisplayName) userDisplayName.textContent = userName;
+      if (userDisplayRole) userDisplayRole.textContent = role.charAt(0).toUpperCase() + role.slice(1);
+      if (dropdownUserName) dropdownUserName.textContent = userName;
+      if (dropdownUserRole) dropdownUserRole.textContent = 'Rol: ' + (role.charAt(0).toUpperCase() + role.slice(1));
+      const dropdownUserEmail = document.getElementById('dropdown-user-email');
+      if (dropdownUserEmail) dropdownUserEmail.textContent = userEmail;
+      const userDisplayEmail = document.getElementById('user-display-email');
+      if (userDisplayEmail) userDisplayEmail.textContent = userEmail;
+
+      // 2. Dropdown de Usuario
+      const userBtn = document.getElementById('user-menu-btn');
+      const userDropdown = document.getElementById('user-dropdown');
+
+      if (userBtn && userDropdown) {
+        userBtn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const isActive = userDropdown.classList.contains('active');
+          userDropdown.classList.toggle('active', !isActive);
+          userBtn.setAttribute('aria-expanded', !isActive);
+        });
+
+        document.addEventListener('click', function (e) {
+          if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+            userDropdown.classList.remove('active');
+            userBtn.setAttribute('aria-expanded', 'false');
+          }
+        });
+      }
+
+      // Logout
+      const logoutBtn = document.getElementById('btn-logout');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function () {
+          sessionStorage.removeItem('noki-admin-role');
+          sessionStorage.removeItem('noki-admin-user');
+          sessionStorage.removeItem('noki-admin-name');
+          sessionStorage.removeItem('noki-admin-email');
+          window.location.href = 'index.html';
+        });
+      }
+
+      // 3. Toggle de Sidebar en Móvil
+      const sidebarToggle = document.getElementById('sidebar-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      function openSidebar() {
+        if (sidebar) sidebar.classList.add('open');
+        if (overlay) overlay.classList.add('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
+      }
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('open');
+        if (overlay) overlay.classList.remove('active');
+        if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+      }
+
+      if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', function () {
+          if (sidebar && sidebar.classList.contains('open')) {
+            closeSidebar();
+          } else {
+            openSidebar();
+          }
+        });
+      }
+      if (overlay) overlay.addEventListener('click', closeSidebar);
+
+      // 4. Búsqueda reactiva en tabla
+      const searchInput = document.getElementById('search-directory-input');
+      const tbody = document.getElementById('directory-tbody');
+      const rows = tbody ? Array.from(tbody.querySelectorAll('tr')) : [];
+
+      function filterTable() {
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const activeBtn = document.querySelector('.filter-status-btn.active');
+        const filterStatus = activeBtn ? activeBtn.getAttribute('data-filter') : 'todos';
+
+        rows.forEach(function (row) {
+          const text = row.textContent.toLowerCase();
+          const status = row.getAttribute('data-status');
+          const matchesQuery = !query || text.includes(query);
+          const matchesStatus = filterStatus === 'todos' || status === filterStatus;
+
+          row.style.display = matchesQuery && matchesStatus ? '' : 'none';
+        });
+      }
+
+      if (searchInput) {
+        searchInput.addEventListener('input', filterTable);
+      }
+
+      // 5. Filtros por botones de estado
+      const filterBtns = document.querySelectorAll('.filter-status-btn');
+      filterBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          filterBtns.forEach(b => {
+            b.classList.remove('active', 'btn--secondary');
+            b.classList.add('btn--ghost');
+          });
+          btn.classList.add('active', 'btn--secondary');
+          btn.classList.remove('btn--ghost');
+          filterTable();
+        });
+      });
+
+      // 6. Modales (Crear, Ver, Archivar)
+      const modalForm = document.getElementById('modal-form-directory');
+      const modalView = document.getElementById('modal-view-directory');
+      const modalArchive = document.getElementById('modal-archive-directory');
+
+      function openModal(modal) {
+        if (modal) {
+          modal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+      }
+
+      function closeModal(modal) {
+        if (modal) {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Abrir modal de creación
+      const btnCreate = document.getElementById('btn-open-create-modal');
+      const formDir = document.getElementById('form-directory');
+      const modalFormTitle = document.getElementById('modal-form-title');
+
+      if (btnCreate) {
+        btnCreate.addEventListener('click', function () {
+          if (formDir) formDir.reset();
+          if (modalFormTitle) modalFormTitle.textContent = 'Nueva Ficha de Directorio';
+          openModal(modalForm);
+        });
+      }
+
+      // Cerrar modales con botones X
+      document.getElementById('btn-close-form-modal')?.addEventListener('click', () => closeModal(modalForm));
+      document.getElementById('btn-close-view-modal')?.addEventListener('click', () => closeModal(modalView));
+      document.getElementById('btn-close-view-footer')?.addEventListener('click', () => closeModal(modalView));
+      document.getElementById('btn-close-archive-modal')?.addEventListener('click', () => closeModal(modalArchive));
+      document.getElementById('btn-cancel-archive')?.addEventListener('click', () => closeModal(modalArchive));
+
+      // Cerrar al clickear backdrop o presionar Escape
+      [modalForm, modalView, modalArchive].forEach(function (m) {
+        if (m) {
+          m.addEventListener('click', function (e) {
+            if (e.target === m) closeModal(m);
+          });
+        }
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          closeModal(modalForm);
+          closeModal(modalView);
+          closeModal(modalArchive);
+        }
+      });
+
+      // Acciones por fila (Editar, Ver, Archivar)
+      rows.forEach(function (row) {
+        const placeName = row.querySelector('td strong')?.textContent || 'Centro de Acopio';
+        const address = row.querySelectorAll('td')[1]?.textContent || '';
+        const status = row.getAttribute('data-status');
+
+        // Botón Editar
+        row.querySelector('.btn-edit')?.addEventListener('click', function () {
+          if (modalFormTitle) modalFormTitle.textContent = 'Editar Ficha: ' + placeName;
+          document.getElementById('dir-name').value = placeName;
+          document.getElementById('dir-address').value = address.split(',')[0] || '';
+          document.getElementById('dir-neighborhood').value = address.split(',')[1]?.trim() || '';
+          document.getElementById('dir-status').value = status;
+          document.getElementById('dir-source').value = 'https://medellin.gov.co/puntos-limpios';
+          document.getElementById('dir-review-date').value = '2026-09-24';
+          openModal(modalForm);
+        });
+
+        // Botón Ver
+        row.querySelector('.btn-view')?.addEventListener('click', function () {
+          const content = document.getElementById('modal-view-content');
+          if (content) {
+            content.innerHTML = `
+              <div style="line-height: 1.8;">
+                <h3 style="font-size: 1.25rem; font-weight: 700; color: #1B5E20; margin-bottom: 8px;">${placeName}</h3>
+                <p><strong>Ubicación:</strong> ${address}</p>
+                <p><strong>Estado editorial:</strong> <span class="badge-directory badge-directory--${status}">${status.charAt(0).toUpperCase() + status.slice(1)}</span></p>
+                <p><strong>Residuos recibidos:</strong> Celulares, cargadores, pantallas y componentes electrónicos menores.</p>
+                <p><strong>Horario habitual:</strong> Lunes a Viernes de 8:00 AM a 5:00 PM</p>
+                <p><strong>Última revisión editorial:</strong> 24 de Septiembre de 2026</p>
+              </div>
+            `;
+          }
+          openModal(modalView);
+        });
+
+        // Botón Archivar
+        row.querySelector('.btn-archive')?.addEventListener('click', function () {
+          const nameSpan = document.getElementById('archive-place-name');
+          if (nameSpan) nameSpan.textContent = placeName;
+          openModal(modalArchive);
+        });
+      });
+
+      // Contador de caracteres en archivo
+      const archiveReason = document.getElementById('archive-reason');
+      const charCount = document.getElementById('archive-char-count');
+      if (archiveReason && charCount) {
+        archiveReason.addEventListener('input', function () {
+          charCount.textContent = `${archiveReason.value.length} / 500 caracteres`;
+        });
+      }
+
+      // Submit Formulario Archivo
+      document.getElementById('form-archive')?.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const reason = archiveReason.value.trim();
+        if (reason.length < 10) {
+          alert('Por favor indica un motivo de al menos 10 caracteres para cumplir con la auditoría (AF-07).');
+          return;
+        }
+        alert('Ficha archivada exitosamente con registro en auditoría.');
+        closeModal(modalArchive);
+      });
+
+      // Submit Formulario Crear / Editar
+      if (formDir) {
+        formDir.addEventListener('submit', function (e) {
+          e.preventDefault();
+          alert('Ficha guardada y publicada en la red con fecha de revisión editorial validada (AF-06).');
+          closeModal(modalForm);
+        });
+      }
+
+    })();
+  </script>
+</body>
+</html>
